@@ -1,5 +1,3 @@
-USE ABCDB;
-
 CREATE TABLE IF NOT EXISTS Account_Type(
 	account_type_id INT PRIMARY KEY,
 	account_name VARCHAR(100),
