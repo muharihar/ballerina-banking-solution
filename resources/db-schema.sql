@@ -1,3 +1,5 @@
+USE ABCDB;
+
 CREATE TABLE IF NOT EXISTS Account_Type(
 	account_type_id INT PRIMARY KEY,
 	account_name VARCHAR(100),
@@ -31,8 +33,6 @@ CREATE TABLE IF NOT EXISTS Account(
 	user_id INT,
 	account_type_id INT,
 	currency_id INT,
-	FOREIGN KEY (user_id) REFERENCES Customer_Info(user_id) ON DELETE CASCADE,
-	FOREIGN KEY (account_type_id) REFERENCES Account_Type(account_type_id) ON DELETE CASCADE,
 	FOREIGN KEY (currency_id) REFERENCES Currency(currency_id) ON DELETE CASCADE
 )ENGINE INNODB;
 
