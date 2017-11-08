@@ -40,16 +40,26 @@ CREATE TABLE IF NOT EXISTS Pay_Orders(
 	transaction_date TIMESTAMP,
 	acc_number INT,
 	to_acc_number INT,
+	frequency INT,
 	FOREIGN KEY (acc_number) REFERENCES Account(acc_number) ON DELETE CASCADE
 )ENGINE INNODB;
 
-CREATE TABLE IF NOT EXISTS Transaction(
+CREATE TABLE IF NOT EXISTS Transactions(
 	transaction_id INT PRIMARY KEY,
 	transaction_amount FLOAT(100,2),
 	transaction_date TIMESTAMP,
 	utility_provider_id INT,
 	pay_order_id INT,
-	acc_number INT,
+	acc_number INT NOT NULL,
 	currency_id INT,
 	FOREIGN KEY (currency_id) REFERENCES Currency(currency_id) ON DELETE CASCADE
 )ENGINE INNODB;
+
+CREATE TABLE IF NOT EXISTS OTP_Info(
+    id INT NOT NULL AUTO_INCREMENT,
+    otp_id INT,
+    created_date TIMESTAMP,
+    user_id INT,
+    PRIMARY KEY(id),
+    FOREIGN KEY (user_id) REFERENCES Customer_Info(user_id) ON DELETE CASCADE
+)
