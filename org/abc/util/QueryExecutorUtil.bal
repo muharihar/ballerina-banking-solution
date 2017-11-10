@@ -36,7 +36,7 @@ function getUserID (int accountNumber) (int userID, error err) {
     return;
 }
 
-function checkTokenExistance (int userID) (boolean exist, string otpCreatedTime, string otp_id, error err) {
+function checkTokenExistance (int userID) (boolean exist, string otpCreatedTime, error err) {
     endpoint<sql:ClientConnector> ep {
         init();
     }
@@ -51,37 +51,29 @@ function checkTokenExistance (int userID) (boolean exist, string otpCreatedTime,
         sql:Parameter para1 = {sqlType:"integer", value:userID, direction:0};
         parameters = [para1];
         datatable dt = ep.select(query_tokenInfo, parameters);
-        //if (dt.hasNext()) {
-            //exist = true;
-            //println("b");
-            while (dt.hasNext()) {
-                exist = true;
-                any dataStruct = dt.getNext();
-                tv, ex = (beans:TokenValidity)dataStruct;
-                println("c");
-                if (ex != null) {
-                    log:printErrorCause("TokenGen:error in struct casting", (error)ex);
-                    println("d");
-                }
-                else{
-                    println("e");
-                    println(tv.created_date);
-                    otpCreatedTime = tv.created_date;
-                    otp_id = tv.otp_id;
-                }
-            }
 
-       // }
-       // else {
-        //    exist = false;
-      //  }
+        while (dt.hasNext()) {
+            exist = true;
+            any dataStruct = dt.getNext();
+            tv, ex = (beans:TokenValidity)dataStruct;
+            println("c");
+            if (ex != null) {
+                log:printErrorCause("TokenGen:error in struct casting", (error)ex);
+                println("d");
+            }
+            else {
+                println("e");
+                println(tv.created_date);
+                otpCreatedTime = tv.created_date;
+            }
+        }
     } catch (error e) {
         err = e;
     }
     return;
 }
 
-function insertGenToken (int userid, string token){
+function insertGenToken (int userid, string token) {
     endpoint<sql:ClientConnector> ep {
         init();
     }
