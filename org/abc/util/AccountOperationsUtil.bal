@@ -5,7 +5,7 @@ import ballerina.log;
 public function getOTPForUSer (string accNo) (string generatedOTP, error err) {
     //Following converts the string input to int
     var accNumber, error_accNo = <int>accNo;
-    
+
     //Checks whether an error has resulted in the above conversion.
     if (error_accNo != null) {
         error er_accNo = (error)error_accNo;

@@ -3,14 +3,16 @@ package org.abc.util;
 import ballerina.util;
 import org.abc.beans as beans;
 
-function generateOTP (int userid) (string generatedOTP) {
-    string ranNo = util:uuid();
-    string uid = <string>userid;
-    generatedOTP = ranNo + uid;
+public function generateOTP (int userid) (string generatedOTP) {
+    if (userid > 0) {
+        string ranNo = util:uuid();
+        string uid = <string>userid;
+        generatedOTP = ranNo + uid;
+    }
     return generatedOTP;
 }
 
-function checkTokenValidity (string tokenCreatedDate) (boolean validity) {
+public function checkTokenValidity (string tokenCreatedDate) (boolean validity) {
     Time createdDate = parse(tokenCreatedDate, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     Time currentDate = currentTime();
     int createdDate_inMiliSec = createdDate.time;
