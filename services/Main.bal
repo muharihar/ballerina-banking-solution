@@ -10,7 +10,7 @@ import org.abc.util as utils;
 service<http> ABCOnlineBankingService {
 
     @http:resourceConfig {
-        methods:["POST"],
+        methods:["GET"],
         path:"/getotp/{accountno}"
     }
     resource getOTPResource (http:Request req, http:Response res, string accountno) {

@@ -9,3 +9,8 @@ public struct Token{
 public struct TokenGen{
     int user_id;
 }
+
+public struct TokenValidity{
+    string otp_id;
+    string created_date;
+}
