@@ -35,7 +35,7 @@ service<http> ABCOnlineBankingService {
 @http:configuration {
     basePath:"/account"
 }
-service<http> ABCOnlineBankingService {
+service<http> ABCOnlineBankingAccountBalanceService {
 
 
     @http:resourceConfig {
