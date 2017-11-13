@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS Transactions(
 
 CREATE TABLE IF NOT EXISTS OTP_Info(
     id INT NOT NULL AUTO_INCREMENT,
-    otp_id INT,
+    otp_id VARCHAR(100),
     created_date TIMESTAMP,
     user_id INT,
     PRIMARY KEY(id),
