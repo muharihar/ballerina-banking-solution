@@ -94,4 +94,25 @@ function insertGenToken (int userid, string token) {
     }
 }
 
+public function getCustomerInfo () (json result, error err) {
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+    sql:Parameter[] parameters = [];
+    TypeCastError ex;
+    beans:TokenGen tg;
+    string query_account = "SELECT * FROM Customer_Info";
+
+    try {
+        //Obtaining user id from the database by passing the account no
+        //parameters = [para1];
+        datatable dt = ep.select(query_account, parameters);
+        var j, _ = <json>dt;
+        result = j;
+    } catch (error e) {
+        err = e;
+    }
+    return;
+}
+
 
