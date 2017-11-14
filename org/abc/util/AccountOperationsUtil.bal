@@ -2,7 +2,7 @@ package org.abc.util;
 
 import ballerina.log;
 
-public function getOTPForUSer (string accNo) (string generatedOTP, error err) {
+public function getOTPForUSer (string accNo) (string generatedOTP, string userID,  error err) {
     //Following converts the string input to int
     var accNumber, error_accNo = <int>accNo;
 
@@ -44,6 +44,7 @@ public function getOTPForUSer (string accNo) (string generatedOTP, error err) {
                     //Generates token if token does not exist
                     generatedOTP = generateOTP(userid);
                     insertGenToken(userid, generatedOTP);
+                    userID = <string>userid;
                 }
             }
         }
