@@ -18,10 +18,10 @@ service<http> ABCOnlineBankingService {
     }
     resource getOTPResource (http:Request req, http:Response res, string accountno) {
         string valueToReturn;
-        var otp, err = utils:getOTPForUSer(accountno);
+        var otp, userid, err = utils:getOTPForUSer(accountno);
+        json payload = {"otp":otp, "userid":userid};
         if (err == null) {
-            valueToReturn = <string>otp;
-            res.setStringPayload(valueToReturn);
+           res.setJsonPayload(payload);
         }
         else {
             log:printErrorCause("getOTPResource:error in getting token", err);
