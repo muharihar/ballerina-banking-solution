@@ -194,7 +194,7 @@ public function cleanupOTP () (error err) {
 
 
 
-public function createNewAccount(int userId, int accountType, int currency)(string msg, error err){
+public function createNewAccount (int userId, int accountType, int currency) (string msg, error err) {
     endpoint<sql:ClientConnector> ep {
         init();
     }
@@ -216,13 +216,13 @@ public function createNewAccount(int userId, int accountType, int currency)(stri
         sql:Parameter para5 = {sqlType:"integer", value:currency, direction:0};
         sql:Parameter para6 = {sqlType:"integer", value:accStatus, direction:0};
 
-        parameters = [para1,para2,para3,para4,para5,para6];
+        parameters = [para1, para2, para3, para4, para5, para6];
         int dt = ep.update(query, parameters);
         println(dt);
 
-        if (dt != 0){
-                 msg = "Account request is successfully received by the Bank";
-             }
+        if (dt != 0) {
+            msg = "Account request is successfully received by the Bank";
+        }
         else {
             msg = "Error creating the new account";
         }
@@ -234,3 +234,31 @@ public function createNewAccount(int userId, int accountType, int currency)(stri
     return;
 }
 
+
+public function getPendingApprovalAccountList () (json result, error err) {
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+
+    TypeConversionError er;
+    sql:Parameter[] parameters = [];
+    int accStatus = cons:ACC_STATUS_APPROVAL_PENDING;
+    string query = "select * from Account where account_status=?";
+
+    try {
+        sql:Parameter para1 = {sqlType:"integer", value:accStatus, direction:0};
+        parameters = [para1];
+        datatable dt = ep.select(query, parameters);
+        result, er = <json>dt;
+        println(result);
+
+        if (er != null) {
+            log:printError("getPendingApprovalAccountList: Error occurred in conversion");
+        }
+
+    }
+    catch (error e) {
+        err = e;
+    }
+    return;
+}
