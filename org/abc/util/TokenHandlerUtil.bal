@@ -50,9 +50,6 @@ public function getOTPForUSer (string accNo) (string generatedOTP, string userID
     }
     return;
 }
-function main(string[] args) {
-   var a,b,c = getOTPForUSer("114565473");
-    println(a);
-    println(b);
-    println(c);
-}
+
+
+
