@@ -1,70 +1,55 @@
 package org.abc.util;
 
-import ballerina.util;
-import org.abc.beans as beans;
-import ballerina.math;
 import ballerina.log;
-import ballerina.task;
 
-int count;
+public function getOTPForUSer (string accNo) (string generatedOTP, string userID,  error err) {
+    //Following converts the string input to int
+    var accNumber, error_accNo = <int>accNo;
 
-public function generateOTP (int userid) (string generatedOTP) {
-    if (userid > 0) {
-        string ranNo = util:uuid();
-        string uid = <string>userid;
-        generatedOTP = ranNo + uid;
-    }
-    return generatedOTP;
-}
-
-public function checkTokenValidity (string tokenCreatedDate) (boolean validity) {
-    Time createdDate = parse(tokenCreatedDate, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    Time currentDate = currentTime();
-    int createdDate_inMiliSec = createdDate.time;
-    int currentTime_inMiliSec = currentDate.time;
-    int difference = currentTime_inMiliSec - createdDate_inMiliSec;
-    if (difference > 86400000) {
-        validity = false;
+    //Checks whether an error has resulted in the above conversion.
+    if (error_accNo != null) {
+        error er_accNo = (error)error_accNo;
+        log:printErrorCause("getOTPForUSer:error in obtaining Account Number:", er_accNo);
+        err = {msg:"getOTPForUSer:error occured when evaluating payload"};
     }
     else {
-        validity = true;
+        //Calls the function that retrieves user id for a given account number
+        var userid, er = getUserID(accNumber);
+        if (er != null) {
+            log:printErrorCause("getOTPForUSer:error on obtaining userid", er);
+            err = {msg:"getOTPForUSer:error occured when obtaining userid from database"};
+        }
+        else {
+            //Checks token existance from database, at the same time returns the created date of token if exists
+            var tokenExist, createdDate, et = checkTokenExistance(userid);
+            if (et != null) {
+                log:printErrorCause("getOTPForUSer:error on obtaining details on token details", et);
+                err = {msg:"getOTPForUSer:error occured when obtaining token details from database"};
+            }
+            else {
+                if (tokenExist) {
+                    //Checks the token validity if exists
+                    boolean tokenValidity = checkTokenValidity(createdDate);
+                    if (tokenValidity) {
+                        err = {msg:"getOTPForUSer:otp still active for user"};
+                    }
+                    else {
+                        //Generates token if expired and inserts to database
+                        generatedOTP = generateOTP(userid);
+                        insertGenToken(userid, generatedOTP);
+                    }
+                }
+                else {
+                    //Generates token if token does not exist
+                    generatedOTP = generateOTP(userid);
+                    insertGenToken(userid, generatedOTP);
+                    userID = <string>userid;
+                }
+            }
+        }
     }
     return;
-
 }
 
 
-
-public function scheduledTaskTimer(){
-
-    function () returns (error) onTriggerFunction = cleanupOTP;
-    function (error e) onErrorFunction = cleanupError;
-    var taskId, schedulerError = task:scheduleTimer(onTriggerFunction,
-                                                    onErrorFunction, {delay:500, interval:60000});
-    if (schedulerError != null) {
-        println("Timer scheduling failed: " + schedulerError.msg) ;
-    } else {
-        println("Task ID:" + taskId);
-    }
-
-}
-
-
-public function scheduledTaskAppointment(){
-
-    //int app1Count;
-    string appTid;
-    function () returns (error) onTriggerFunction;
-    function (error e) onErrorFunction;
-    onTriggerFunction = cleanupOTP;
-    onErrorFunction = cleanupError;
-    appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, "0/40 * * * * ?");
-
-}
-
-
-function cleanupError(error e) {
-    print("[ERROR] OTP cleanup failed");
-    println(e);
-}
 
