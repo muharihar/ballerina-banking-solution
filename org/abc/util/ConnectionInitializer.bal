@@ -5,11 +5,11 @@ import ballerina.os;
 
 
 public function init() (sql:ClientConnector connInit){
-    string mysqlHostName = os:getEnv("MYSQL_HOSTNAME");
-    var mysqlPort, _ = <int>os:getEnv("MYSQL_PORT");
-    string mysqlDatabase = os:getEnv("MYSQL_DATABASE");
-    string mysqlUserName = os:getEnv("MYSQL_USER");
-    string mysqlPassword = os:getEnv("MYSQL_PASSWORD");
+    string mysqlHostName = "192.168.48.209";
+    int mysqlPort = 3306;
+    string mysqlDatabase = "Bank";
+    string mysqlUserName = "root";
+    string mysqlPassword = "root";
 
     sql:ConnectionProperties propertiesInit = {maximumPoolSize:5, connectionTimeout:300000};
     connInit = create sql:ClientConnector(
