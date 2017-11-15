@@ -51,54 +51,5 @@ public function getOTPForUSer (string accNo) (string generatedOTP, string userID
     return;
 }
 
-function main(string[] args) {
-   var a,b,c = getOTPForUSer("114565473");
-    println(a);
-    println(b);
-    println(c);
-}
 
-
-public function scheduledTaskTimer(){
-
-    function () returns (error) onTriggerFunction = cleanupOTP;
-    function (error e) onErrorFunction = cleanupError;
-    var taskId, schedulerError = task:scheduleTimer(onTriggerFunction,
-                                                    onErrorFunction, {delay:500, interval:60000});
-    if (schedulerError != null) {
-        println("Timer scheduling failed: " + schedulerError.msg) ;
-    } else {
-        println("Task ID:" + taskId);
-    }
-
-}
-
-
-public function scheduledTaskAppointment (string cron) (string msg) {
-
-    string appTid;
-
-    //runs every 40 seconds
-    //string cron = "0/40 * * * * ?";
-    function () returns (error) onTriggerFunction;
-    function (error) onErrorFunction;
-    onTriggerFunction = cleanupOTP;
-    onErrorFunction = cleanupError;
-
-    try{
-        appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, cron);
-        msg = "Success";
-    }catch(error e){
-        log:printErrorCause("Scheduled Task Appointment failure", e);
-        msg = "Fail";
-        println(e.msg);
-    }
-    return;
-}
-
-
-function cleanupError(error e) {
-    print("[ERROR] OTP cleanup failed");
-    println(e);
-}
 
