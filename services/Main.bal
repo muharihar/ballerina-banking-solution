@@ -44,20 +44,28 @@ service<http> ABCOnlineBankingService {
 
     }
 
-     @http:resourceConfig {
+    @http:resourceConfig {
         methods:["POST"],
-        path:"/getinfo/customer"
+        path:"/getinfo/customer/{userid}"
     }
-    resource getAllCustomerInfoResource (http:Request req, http:Response res) {
+    resource getAllCustomerInfoResource (http:Request req, http:Response res, string userid) {
+        var uid, e = <int>userid;
         string valueToReturn;
-        var result, err = utils:getCustomerInfo();
-        if (err == null) {
-            println(result);
-            res.setJsonPayload(result);
+        if (e == null) {
+            var result, err = utils:getCustomerInfo(uid);
+            if (err == null) {
+                println(result);
+                res.setJsonPayload(result);
+            }
+            else {
+                log:printErrorCause("getAllCustomerInfoResource:error in getting token", err);
+                valueToReturn = err.msg;
+                res.setStringPayload(valueToReturn);
+            }
         }
         else {
-            log:printErrorCause("getOTPResource:error in getting token", err);
-            valueToReturn = err.msg;
+            log:printErrorCause("getAllCustomerInfoResource:error in the userid", (error)e);
+            valueToReturn = e.msg;
             res.setStringPayload(valueToReturn);
         }
         res.send();
