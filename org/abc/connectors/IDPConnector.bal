@@ -53,19 +53,55 @@ public connector IDPConnector () {
        return;
     }
 
-     action addUser (string username)(boolean isExist, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+     action addUser (string username, string password, string userid)(boolean userAdded, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
             init();}
         http:Request request = {};
-        string soapAct = "urn:isExistingUser";
+        string soapAct = "urn:addUser";
+        xmlns "http://service.ws.um.carbon.wso2.org" as ser;
+        xmlns "http://service.ws.um.carbon.wso2.org" as ns;
+        xmlns "http://schemas.xmlsoap.org/soap/envelope/" as soapenv;
+        xml payloadToBeSent = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.um.carbon.wso2.org" xmlns:xsd="http://common.mgt.user.carbon.wso2.org/xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:addUser>
+         <ser:userName>{{username}}</ser:userName>
+         <ser:credential>{{password}}</ser:credential>
+         <ser:roleList>user</ser:roleList>
+         <ser:claims>
+            <xsd:claimURI>http://wso2.org/claims/im</xsd:claimURI>
+            <xsd:value>{{userid}}</xsd:value>
+         </ser:claims>
+         <ser:profileName>default</ser:profileName>
+         <ser:requirePasswordChange>false</ser:requirePasswordChange>
+      </ser:addUser>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+
+       request = getRequest(soapAct, payloadToBeSent, authHeader);
+       http:Response response = {};
+       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       int headerValue= response.getStatusCode();
+       if (headerValue == 202){
+                userAdded = true;
+       }
+       return;
+    }
+
+    action getid (string username)(int userid, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+            init();}
+        http:Request request = {};
+        string soapAct = "urn:addUser";
         xmlns "http://service.ws.um.carbon.wso2.org" as ser;
         xmlns "http://service.ws.um.carbon.wso2.org" as ns;
         xmlns "http://schemas.xmlsoap.org/soap/envelope/" as soapenv;
         xml payloadToBeSent = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.um.carbon.wso2.org">
    <soapenv:Header/>
    <soapenv:Body>
-      <ser:isExistingUser>
+      <ser:getUserClaimValue>
          <ser:userName>{{username}}</ser:userName>
-      </ser:isExistingUser>
+         <ser:claim>http://wso2.org/claims/im</ser:claim>
+         <ser:profileName>default</ser:profileName>
+      </ser:getUserClaimValue>
    </soapenv:Body>
 </soapenv:Envelope>`;
 
@@ -74,12 +110,13 @@ public connector IDPConnector () {
        response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
        xml rePayload = response.getXmlPayload();
        xml allChildren = rePayload.children();
-       xml authResponse = allChildren.selectChildren("isExistingUserResponse");
+       xml authResponse = allChildren.selectChildren("getUserClaimValueResponse");
        xml authResponseChild = authResponse.selectChildren("return");
        string elementTextValue = authResponseChild.getTextValue();
-       isExist, _ = <boolean>elementTextValue;
+       userid, _ = <int>elementTextValue;
        return;
     }
+
 }
 function getEncodedValue(string value1,string value2) (string encodedString) {
     string toEncode = value1 + ":" + value2;
@@ -87,7 +124,7 @@ function getEncodedValue(string value1,string value2) (string encodedString) {
     return ;
 }
 function init() (http:HttpClient idpEndpoint) {
-    string url = "https://localhost:9443/services";
+    string url = "https://192.168.48.209:9443/services";
     idpEndpoint =
     create http:HttpClient(url,{});
     return ;
