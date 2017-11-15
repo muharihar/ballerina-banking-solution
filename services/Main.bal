@@ -32,20 +32,20 @@ service<http> ABCOnlineBankingService {
 
     @http:resourceConfig {
         methods:["POST"],
-        path:"/test/"
+        path:"/user/authe"
     }
-    resource getTestResource (http:Request req, http:Response res) {
+    resource authenticateUserResource (http:Request req, http:Response res) {
         endpoint<conn:IDPConnector> idpEp {
         }
         conn:IDPConnector idpCon = create conn:IDPConnector();
         bind idpCon with idpEp;
-        var re, _ = idpEp.authenticateUser("admin", "admin");
+        var re, _ = idpEp.authenticate("admin", "admin");
         println(re);
 
     }
 
     @http:resourceConfig {
-        methods:["POST"],
+        methods:["GET"],
         path:"/getinfo/customer/{userid}"
     }
     resource getAllCustomerInfoResource (http:Request req, http:Response res, string userid) {

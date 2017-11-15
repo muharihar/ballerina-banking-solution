@@ -2,7 +2,7 @@ package org.abc.connectors;import ballerina.net.http;import ballerina.util;
 public connector IDPConnector () {
     string authHeader = getEncodedValue("admin","admin");
 
-    action authenticateUser (string username, string password)(boolean isExist, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+    action authenticate (string username, string password)(boolean isAuthenticated, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
             init();}
         http:Request request = {};
         string soapAct = "urn:authenticate";
@@ -12,12 +12,69 @@ public connector IDPConnector () {
         xml payloadToBeSent = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.um.carbon.wso2.org">
     <soapenv:Header/><soapenv:Body><ser:authenticate><ser:userName>{{username}}</ser:userName><ser:credential>{{password}}</ser:credential></ser:authenticate></soapenv:Body>
 </soapenv:Envelope>`;
+
        request = getRequest(soapAct, payloadToBeSent, authHeader);
        http:Response response = {};
-       response, err = idp.post("/RemoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap12Endpoint/", request);
+       response, err = idp.post("/RemoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
        xml rePayload = response.getXmlPayload();
        xml allChildren = rePayload.children();
        xml authResponse = allChildren.selectChildren("authenticateResponse");
+       xml authResponseChild = authResponse.selectChildren("return");
+       string elementTextValue = authResponseChild.getTextValue();
+       isAuthenticated, _ = <boolean>elementTextValue;
+       return;
+    }
+
+    action isExist (string username)(boolean isExist, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+            init();}
+        http:Request request = {};
+        string soapAct = "urn:isExistingUser";
+        xmlns "http://service.ws.um.carbon.wso2.org" as ser;
+        xmlns "http://service.ws.um.carbon.wso2.org" as ns;
+        xmlns "http://schemas.xmlsoap.org/soap/envelope/" as soapenv;
+        xml payloadToBeSent = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.um.carbon.wso2.org">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:isExistingUser>
+         <ser:userName>{{username}}</ser:userName>
+      </ser:isExistingUser>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+
+       request = getRequest(soapAct, payloadToBeSent, authHeader);
+       http:Response response = {};
+       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       xml rePayload = response.getXmlPayload();
+       xml allChildren = rePayload.children();
+       xml authResponse = allChildren.selectChildren("isExistingUserResponse");
+       xml authResponseChild = authResponse.selectChildren("return");
+       string elementTextValue = authResponseChild.getTextValue();
+       isExist, _ = <boolean>elementTextValue;
+       return;
+    }
+
+     action addUser (string username)(boolean isExist, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+            init();}
+        http:Request request = {};
+        string soapAct = "urn:isExistingUser";
+        xmlns "http://service.ws.um.carbon.wso2.org" as ser;
+        xmlns "http://service.ws.um.carbon.wso2.org" as ns;
+        xmlns "http://schemas.xmlsoap.org/soap/envelope/" as soapenv;
+        xml payloadToBeSent = xml `<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.ws.um.carbon.wso2.org">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <ser:isExistingUser>
+         <ser:userName>{{username}}</ser:userName>
+      </ser:isExistingUser>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+
+       request = getRequest(soapAct, payloadToBeSent, authHeader);
+       http:Response response = {};
+       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       xml rePayload = response.getXmlPayload();
+       xml allChildren = rePayload.children();
+       xml authResponse = allChildren.selectChildren("isExistingUserResponse");
        xml authResponseChild = authResponse.selectChildren("return");
        string elementTextValue = authResponseChild.getTextValue();
        isExist, _ = <boolean>elementTextValue;
