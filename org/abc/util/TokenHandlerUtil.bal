@@ -50,16 +50,26 @@ public function scheduledTaskTimer(){
 }
 
 
-public function scheduledTaskAppointment(){
+public function scheduledTaskAppointment (string cron) (string msg) {
 
-    //int app1Count;
     string appTid;
+
+    //runs every 40 seconds
+    //string cron = "0/40 * * * * ?";
     function () returns (error) onTriggerFunction;
-    function (error e) onErrorFunction;
+    function (error) onErrorFunction;
     onTriggerFunction = cleanupOTP;
     onErrorFunction = cleanupError;
-    appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, "0/40 * * * * ?");
 
+    try{
+        appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, cron);
+        msg = "Success";
+    }catch(error e){
+        log:printErrorCause("Scheduled Task Appointment failure", e);
+        msg = "Fail";
+        println(e.msg);
+    }
+    return;
 }
 
 

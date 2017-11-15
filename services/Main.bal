@@ -35,7 +35,7 @@ service<http> ABCOnlineBankingService {
 @http:configuration {
     basePath:"/account"
 }
-service<http> ABCOnlineBankingAccountBalanceService {
+service<http> ABCOnlineBankingAccountService {
 
 
     @http:resourceConfig {
@@ -93,8 +93,47 @@ service<http> ABCOnlineBankingAccountBalanceService {
             res.setJsonPayload(valueToReturn);
         }
 
-        //utils:scheduledTaskTimer();
-        utils:scheduledTaskAppointment();
+        //utils:scheduledTaskTimer();0/40 * * * * ?
+        string msg = utils:scheduledTaskAppointment("0/40 * * * * ?");
+        println(msg);
+
+        res.send();
+    }
+
+
+
+    @http:resourceConfig {
+        path:"/newaccount",
+        methods:["POST"]
+    }
+    resource createNewAccount (http:Request req, http:Response res) {
+        string valueToReturn;
+        int account;
+
+        //TODO - get the user_id
+        int user_id = 1067544678;
+        map params = req.getQueryParams();
+        var accType, _ = (string)params.accountType;
+        var accountType, _ = <int>accType;
+
+        var curr, _ = (string)params.currency;
+        var currency, _ = <int>curr;
+
+
+
+        //TODO - check if the user is valid (isExist)
+
+        var msg, err = utils:createNewAccount(user_id, accountType, currency);
+        if (err == null) {
+            valueToReturn = msg;
+            res.setStringPayload(valueToReturn);
+
+        }
+        else {
+            log:printErrorCause("newAccount:error creating a new account", err);
+            valueToReturn = "New account creation failed. Please try again later";
+            res.setStringPayload(valueToReturn);
+        }
 
         res.send();
     }

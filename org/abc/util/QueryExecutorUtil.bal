@@ -5,6 +5,7 @@ import ballerina.log;
 import org.abc.beans as beans;
 import org.abc.error as bError;
 import ballerina.math;
+import org.abc as cons;
 
 
 function getUserID (int accountNumber) (int userID, error err) {
@@ -98,7 +99,7 @@ function insertGenToken (int userid, string token) {
 
 public function getBalanceByAccountNumber (int accountNumber) (float balance, error err, bError:BackendError bErr) {
     endpoint<sql:ClientConnector> ep {
-        create sql:ClientConnector(sql:MYSQL, "192.168.48.209", 3306, "Bank", "root", "root", {maximumPoolSize:1});
+        init();
     }
     sql:Parameter[] parameters = [];
     TypeCastError ex;
@@ -139,7 +140,7 @@ public function getBalanceByAccountNumber (int accountNumber) (float balance, er
 
 public function getBalanceByUser (int userid) (json balance, error err, bError:BackendError bErr) {
     endpoint<sql:ClientConnector> ep {
-        create sql:ClientConnector(sql:MYSQL, "192.168.48.209", 3306, "Bank", "root", "root", {maximumPoolSize:5});
+        init();
     }
     sql:Parameter[] parameters = [];
     TypeCastError ex;
@@ -164,7 +165,7 @@ public function getBalanceByUser (int userid) (json balance, error err, bError:B
 
 public function cleanupOTP () (error err) {
     endpoint<sql:ClientConnector> ep {
-        create sql:ClientConnector(sql:MYSQL, "192.168.48.209", 3306, "Bank", "root", "root", {maximumPoolSize:5});
+        init();
     }
     sql:Parameter[] parameters = [];
 
@@ -179,7 +180,7 @@ public function cleanupOTP () (error err) {
         sql:Parameter para1 = {sqlType:"timestamp", value:tmSub, direction:0};
         parameters = [para1];
         int dt = ep.update(query, parameters);
-        println(dt);
+        log:printInfo("Executed Cleanup OTP Task and deleted " + dt + " OTP numbers");
         ep.close();
 
     }
@@ -188,6 +189,48 @@ public function cleanupOTP () (error err) {
         err = e;
     }
 
+    return;
+}
+
+
+
+public function createNewAccount(int userId, int accountType, int currency)(string msg, error err){
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+
+    Time time = currentTime();
+    float currentBalance = 0;
+    int accStatus = cons:ACC_STATUS_APPROVAL_PENDING;
+
+
+    string query = "insert into Account (created_date,current_balance,user_id,account_type_id,currency_id,account_status)
+     values (?,?,?,?,?,?)";
+    sql:Parameter[] parameters = [];
+
+    try {
+        sql:Parameter para1 = {sqlType:"timestamp", value:time, direction:0};
+        sql:Parameter para2 = {sqlType:"float", value:currentBalance, direction:0};
+        sql:Parameter para3 = {sqlType:"integer", value:userId, direction:0};
+        sql:Parameter para4 = {sqlType:"integer", value:accountType, direction:0};
+        sql:Parameter para5 = {sqlType:"integer", value:currency, direction:0};
+        sql:Parameter para6 = {sqlType:"integer", value:accStatus, direction:0};
+
+        parameters = [para1,para2,para3,para4,para5,para6];
+        int dt = ep.update(query, parameters);
+        println(dt);
+
+        if (dt != 0){
+                 msg = "Account request is successfully received by the Bank";
+             }
+        else {
+            msg = "Error creating the new account";
+        }
+
+    }
+    catch (error e) {
+        err = e;
+    }
     return;
 }
 
