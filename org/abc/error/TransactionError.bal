@@ -1,4 +1,4 @@
-package org.abc.errors;
+package org.abc.error;
 
 public struct BackendError {
     int status_code;
