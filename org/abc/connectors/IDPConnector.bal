@@ -1,4 +1,8 @@
-package org.abc.connectors;import ballerina.net.http;import ballerina.util;
+package org.abc.connectors;
+
+import ballerina.net.http;
+import ballerina.util;
+
 public connector IDPConnector () {
     string authHeader = getEncodedValue("admin","admin");
 
@@ -25,7 +29,8 @@ public connector IDPConnector () {
        return;
     }
 
-    action isExist (string username)(boolean isExist, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+    action isExist (string username)(boolean isExist, http:HttpConnectorError err){
+        endpoint<http:HttpClient> idp{
             init();}
         http:Request request = {};
         string soapAct = "urn:isExistingUser";
@@ -43,7 +48,7 @@ public connector IDPConnector () {
 
        request = getRequest(soapAct, payloadToBeSent, authHeader);
        http:Response response = {};
-       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       response, err = idp.post("/RemoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
        xml rePayload = response.getXmlPayload();
        xml allChildren = rePayload.children();
        xml authResponse = allChildren.selectChildren("isExistingUserResponse");
@@ -79,7 +84,7 @@ public connector IDPConnector () {
 
        request = getRequest(soapAct, payloadToBeSent, authHeader);
        http:Response response = {};
-       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       response, err = idp.post("/RemoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
        int headerValue= response.getStatusCode();
        if (headerValue == 202){
                 userAdded = true;
@@ -87,10 +92,10 @@ public connector IDPConnector () {
        return;
     }
 
-    action getid (string username)(int userid, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
+    action getid (string username)(string userid, http:HttpConnectorError err){endpoint<http:HttpClient>idp{
             init();}
         http:Request request = {};
-        string soapAct = "urn:addUser";
+        string soapAct = "urn:getUserClaimValue";
         xmlns "http://service.ws.um.carbon.wso2.org" as ser;
         xmlns "http://service.ws.um.carbon.wso2.org" as ns;
         xmlns "http://schemas.xmlsoap.org/soap/envelope/" as soapenv;
@@ -107,13 +112,13 @@ public connector IDPConnector () {
 
        request = getRequest(soapAct, payloadToBeSent, authHeader);
        http:Response response = {};
-       response, err = idp.post("/RmoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
+       response, err = idp.post("/RemoteUserStoreManagerService.RemoteUserStoreManagerServiceHttpsSoap11Endpoint/", request);
        xml rePayload = response.getXmlPayload();
        xml allChildren = rePayload.children();
        xml authResponse = allChildren.selectChildren("getUserClaimValueResponse");
        xml authResponseChild = authResponse.selectChildren("return");
        string elementTextValue = authResponseChild.getTextValue();
-       userid, _ = <int>elementTextValue;
+       userid = elementTextValue;
        return;
     }
 
@@ -125,16 +130,15 @@ function getEncodedValue(string value1,string value2) (string encodedString) {
 }
 function init() (http:HttpClient idpEndpoint) {
     string url = "https://192.168.48.209:9443/services";
+    //string url = "https://localhost:8909/services";
     idpEndpoint =
     create http:HttpClient(url,{});
     return ;
 }
 function getRequest(string soapAction, xml payload, string authHeader) (http:Request req){
     req = {};
-    println(soapAction);
     req.setHeader("SOAPAction",soapAction);
     req.setHeader("Authorization", "Basic "+ authHeader);
-    println("1");
     req.setXmlPayload(payload);
     req.setHeader("Content-Type", "text/xml");
     return req;
