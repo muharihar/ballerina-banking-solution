@@ -262,3 +262,52 @@ public function getPendingApprovalAccountList () (json result, error err) {
     }
     return;
 }
+
+
+
+public function approveOrRejectAccounts (string status, int accountNo) {
+    // update the db and send an email based on the status of the account
+    if (status.equalsIgnoreCase("approved")) {
+
+
+    } else if (status.equalsIgnoreCase("rejected")) {
+
+    } else {
+
+    }
+
+    string query = "select * from Account where account_status=?";
+
+    try {
+        sql:Parameter para1 = {sqlType:"integer", value:accStatus, direction:0};
+        parameters = [para1];
+        datatable dt = ep.select(query, parameters);
+        result, er = <json>dt;
+        println(result);
+
+        if (er != null) {
+            log:printError("getPendingApprovalAccountList: Error occurred in conversion");
+        }
+
+    }
+    catch (error e) {
+        err = e;
+    }
+    return;
+
+}
+
+
+function updateAccountStatus(string status, int accountNo){
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+
+    TypeConversionError er;
+    sql:Parameter[] parameters = [];
+
+}
+
+function sendEmailToUser(string status, string content){
+
+}
