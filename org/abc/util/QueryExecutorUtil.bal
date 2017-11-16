@@ -97,6 +97,28 @@ function insertGenToken (int userid, string token) {
     }
 }
 
+public function getCustomerInfo (int userid) (json result, error err) {
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+    sql:Parameter[] parameters = [];
+    TypeCastError ex;
+    beans:TokenGen tg;
+    string query_customerInfo = "SELECT * FROM Customer_Info WHERE user_id=?";
+
+    try {
+        //Obtaining customer information by passing userid
+        sql:Parameter para1 = {sqlType:"integer", value:userid, direction:0};
+        parameters = [para1];
+        datatable dt = ep.select(query_customerInfo, parameters);
+        var j, _ = <json>dt;
+        result = j;
+    } catch (error e) {
+        err = e;
+    }
+    return;
+}
+
 public function getBalanceByAccountNumber (int accountNumber) (float balance, error err, bError:BackendError bErr) {
     endpoint<sql:ClientConnector> ep {
         init();
