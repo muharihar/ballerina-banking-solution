@@ -82,15 +82,17 @@ function insertGenToken (int userid, string token) {
     }
     error err;
     sql:Parameter[] parameters = [];
-    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, ?, ?)";
+    //string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, ?, ?)";
+    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, CURDATE(), ?)";
     Time currentTimestamp = currentTime();
 
     try {
         //Inserting generated token to database
         sql:Parameter para1 = {sqlType:"varchar", value:token, direction:0};
-        sql:Parameter para2 = {sqlType:"timestamp", value:currentTimestamp, direction:0};
+        //sql:Parameter para2 = {sqlType:"timestamp", value:currentTimestamp, direction:0};
         sql:Parameter para3 = {sqlType:"integer", value:userid, direction:0};
-        parameters = [para1, para2, para3];
+        //parameters = [para1, para2, para3];
+        parameters = [para1, para3];
         var count, ids = ep.updateWithGeneratedKeys(query_tokenInfo, parameters, null);
     } catch (error e) {
         err = e;
