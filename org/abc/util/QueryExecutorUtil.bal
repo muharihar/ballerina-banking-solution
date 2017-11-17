@@ -83,7 +83,7 @@ function insertGenToken (int userid, string token) {
     error err;
     sql:Parameter[] parameters = [];
     //string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, ?, ?)";
-    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, CURDATE(), ?)";
+    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, NOW(), ?)";
     Time currentTimestamp = currentTime();
 
     try {
