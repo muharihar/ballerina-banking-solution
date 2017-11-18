@@ -3,8 +3,8 @@ package org.abc.util;
 import org.abc.connectors as con;
 import ballerina.net.http;
 
-public function signUpUser(string username, string password, string userid)(boolean, error){
-     endpoint<con:IDPConnector> ep {
+public function signUpUser (string username, string password, string userid) (boolean, error) {
+    endpoint<con:IDPConnector> ep {
         create con:IDPConnector();
     }
     boolean userAdded;
@@ -13,22 +13,22 @@ public function signUpUser(string username, string password, string userid)(bool
 
     var userExist, uExist = ep.isExist(username);
     println(userExist);
-    if (uExist == null){
-        if (!userExist){
+    if (uExist == null) {
+        if (!userExist) {
             userAdded, ex = ep.addUser(username, password, userid);
             err = (error)ex;
         }
-        else{
+        else {
             err = {msg:"User with username: " + username + " already exists"};
         }
     }
-    else{
+    else {
         err = (error)uExist;
     }
     return userAdded, err;
 }
 
-public function loginUser(string username, string password)(string, error){
+public function loginUser (string username, string password) (string, error) {
     endpoint<con:IDPConnector> ep {
         create con:IDPConnector();
     }
@@ -37,19 +37,38 @@ public function loginUser(string username, string password)(string, error){
     http:HttpConnectorError ex;
 
     var userAuth, uAuth = ep.authenticate(username, password);
-    if (uAuth == null){
-        if (userAuth){
+    if (uAuth == null) {
+        if (userAuth) {
             userid, ex = ep.getid(username);
             err = (error)ex;
         }
-        else{
+        else {
             err = {msg:"User not authenticated. Please try again"};
         }
     }
-    else{
+    else {
         err = (error)uAuth;
     }
     return userid, err;
 }
+
+
+public function sendMail (string accessToken, string sender, string subject, string body) (json res, error err) {
+    endpoint<con:GmailConnector> ep {
+        create con:GmailConnector(accessToken);
+    }
+
+    var mailSent, ex = ep.sendMail(sender, subject, "dilinisg@gmail.com", body , "", "", "", "");
+
+    if (ex == null) {
+        res = mailSent;
+    }
+    else {
+        err = (error)ex;
+    }
+
+    return;
+}
+
 
 
