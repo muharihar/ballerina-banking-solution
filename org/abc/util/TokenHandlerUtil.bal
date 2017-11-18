@@ -51,5 +51,9 @@ public function getOTPForUSer (string accNo) (string generatedOTP, string userID
     return;
 }
 
-
+function isTokenValid (string token) {
+    
+    
+    
+}
 
