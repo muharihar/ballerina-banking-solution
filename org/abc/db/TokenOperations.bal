@@ -41,7 +41,7 @@ function isValidTokenExistForUserId (int userID) (boolean exist) {
     return;
 }
 
-function isTokenValid (string token) (int userID) {
+public function isTokenValid (string token) (int userID) {
     endpoint
     <sql:ClientConnector> ep{
         initDb();}
