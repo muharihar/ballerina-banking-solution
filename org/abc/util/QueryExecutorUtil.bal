@@ -8,6 +8,7 @@ import ballerina.math;
 import org.abc as cons;
 
 
+
 function getUserID (int accountNumber) (int userID, error err) {
     endpoint<sql:ClientConnector> ep {
         init();
@@ -82,19 +83,43 @@ function insertGenToken (int userid, string token) {
     }
     error err;
     sql:Parameter[] parameters = [];
-    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, ?, ?)";
+    //string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, ?, ?)";
+    string query_tokenInfo = "INSERT INTO OTP_Info (otp_id, created_date, user_id) VALUES (?, NOW(), ?)";
     Time currentTimestamp = currentTime();
 
     try {
         //Inserting generated token to database
         sql:Parameter para1 = {sqlType:"varchar", value:token, direction:0};
-        sql:Parameter para2 = {sqlType:"timestamp", value:currentTimestamp, direction:0};
+        //sql:Parameter para2 = {sqlType:"timestamp", value:currentTimestamp, direction:0};
         sql:Parameter para3 = {sqlType:"integer", value:userid, direction:0};
-        parameters = [para1, para2, para3];
+        //parameters = [para1, para2, para3];
+        parameters = [para1, para3];
         var count, ids = ep.updateWithGeneratedKeys(query_tokenInfo, parameters, null);
     } catch (error e) {
         err = e;
     }
+}
+
+public function getCustomerInfo (int userid) (json result, error err) {
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+    sql:Parameter[] parameters = [];
+    TypeCastError ex;
+    beans:TokenGen tg;
+    string query_customerInfo = "SELECT * FROM Customer_Info WHERE user_id=?";
+
+    try {
+        //Obtaining customer information by passing userid
+        sql:Parameter para1 = {sqlType:"integer", value:userid, direction:0};
+        parameters = [para1];
+        datatable dt = ep.select(query_customerInfo, parameters);
+        var j, _ = <json>dt;
+        result = j;
+    } catch (error e) {
+        err = e;
+    }
+    return;
 }
 
 public function getBalanceByAccountNumber (int accountNumber) (float balance, error err, bError:BackendError bErr) {
@@ -261,4 +286,74 @@ public function getPendingApprovalAccountList () (json result, error err) {
         err = e;
     }
     return;
+}
+
+
+
+public function approveOrRejectAccounts (json batchStatuses) {
+    // update the db and send an email based on the status of the account
+
+
+
+}
+
+
+public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
+    endpoint<sql:ClientConnector> ep {
+        init();
+    }
+
+    sql:Parameter[] para = [];
+    sql:Parameter[][] params = [];
+
+    int len = lengthof batchStatuses;
+    println("LEN " + len);
+    int i = 0;
+    int statusId;
+
+    while (len > i) {
+        //paramteres = batchStatuses.getKeys();
+        var id1, _ = (string)batchStatuses[i].accountNo;
+        var id, _ = <int>id1;
+        println(id);
+        sql:Parameter paraNum = {sqlType:"integer", value:id, direction:0};
+
+        var status, _ = (string)batchStatuses[i].status;
+        println(status);
+        if (status.equalsIgnoreCase("approved")) {
+
+            statusId = cons:ACC_STATUS_ACTIVE;
+
+        } else if (status.equalsIgnoreCase("rejected")) {
+
+            statusId = cons:ACC_STATUS_BLOCKED;
+
+        } else {
+            log:printError("Invalid Account Status");
+        }
+       // print(statusId);
+        sql:Parameter paraStatus = {sqlType:"integer", value:statusId, direction:0};
+        para = [paraStatus,paraNum];
+        params[i] = para;
+        println(params);
+
+        i = i + 1;
+    }
+
+    string query = "Update Account set account_status=? where acc_number=?";
+
+    try {
+        c = ep.batchUpdate(query, params);
+        println(c);
+
+    }
+    catch (error e) {
+        err = e;
+    }
+    return;
+
+}
+
+function sendEmailToUser (string status, string content) {
+
 }
