@@ -1,6 +1,8 @@
 package services;
 
 import ballerina.net.http;
+import org.abc.serviceImpl;
+
 @http:configuration {
     basePath:"/api",
     allowOrigins:["http://localhost", "http://localhost:4200"],
@@ -33,8 +35,9 @@ service<http> api {
         // Check whether the Token is valid
         // If valid Generate a session and send a 200 to client
         json payload = [{}];
-        resp.setStatusCode(200);
-        resp.send();
+        http:Response  beResp = serviceImpl:checkTokenValidity(req);
+        //resp.setStatusCode(200);
+        resp.forward(beResp);
     }
 
     @http:resourceConfig {
