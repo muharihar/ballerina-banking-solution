@@ -4,11 +4,9 @@ import ballerina.net.http;
 import ballerina.log;
 import org.abc.util as utils;
 import org.abc.connectors as conn;
-import org.abc.serviceImpl as con;
+import org.abc.serviceImpl as sImpl;
 import ballerina.math;
 import ballerina.util;
-
-
 
 
 @http:configuration {
@@ -34,6 +32,7 @@ service<http> ABCOnlineBankingService {
         }
         res.send();
     }
+
 
 
     @http:resourceConfig {
@@ -77,6 +76,7 @@ service<http> ABCOnlineBankingService {
         }
         res.send();
     }
+
 }
 
 @http:configuration {
@@ -113,6 +113,7 @@ service<http> ABCOnlineBankingAccountService {
         }
         res.send();
     }
+
 
 
     @http:resourceConfig {
@@ -213,5 +214,18 @@ service<http> ABCOnlineBankingAccountService {
 
         res.send();
     }
-}
 
+
+    @http:resourceConfig {
+        path:"/getaccounthistory",
+        methods:["POST"]
+    }
+    resource getAccountHistoryResource (http:Request req, http:Response res) {
+        http:Response re = {};
+        re = sImpl:getAccountHistory(req);
+        res.forward(re);
+    }
+
+
+
+}

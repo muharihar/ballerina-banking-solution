@@ -11,10 +11,15 @@ public function checkTokenValidity (http:Request req) (http:Response res) {
     println(token);
     int userID = dboperations:isTokenValid(token);
     println(userID);
-    // If token is valid then create a session and return the session
+     //If token is valid then create a session and return the session
     if (userID != 0) {
         http:Session sesn = req.createSessionIfAbsent();
-        sesn.setAttribute("clintid", userID);
+        println("Created session : ");
+        println(sesn.getId());
+        //println("Existing Session : ");
+        //println(req.getSession());
+        sesn.setAttribute("clientid", userID);
+        var att, _ = (int)sesn.getAttribute("clientid");
         res.setStatusCode(200);
     } else {
         println("Error Invalid Token, Please add a correct Token");
