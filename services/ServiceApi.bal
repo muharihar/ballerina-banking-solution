@@ -10,25 +10,25 @@ import org.abc.serviceImpl;
 }
 service<http> api {
     @http:resourceConfig {
-        methods:["POST"],
+        methods:["POST","GET"],
         path:"/getuser"
     }
     resource getuser (http:Request req, http:Response resp) {
-        json payload = {
-                           "user_id":1034567890,
-                           "first_name":"Chathurika",
-                           "last_name":"De Silva",
-                           "national_id":"867865344V",
-                           "birth_date":"1986-07-23",
-                           "email":"chathurika@gmail.com",
-                           "address":"No.12,Maradana"
-                       };
-        resp.setJsonPayload(payload);
-        resp.send();
+        //json payload = {
+        //                   "user_id":1034567890,
+        //                   "first_name":"Chathurika",
+        //                   "last_name":"De Silva",
+        //                   "national_id":"867865344V",
+        //                   "birth_date":"1986-07-23",
+        //                   "email":"chathurika@gmail.com",
+        //                   "address":"No.12,Maradana"
+        //               };
+        http:Response beResp = serviceImpl:handleSignup(req);
+        resp.forward(beResp);
     }
 
     @http:resourceConfig {
-        methods:["POST"],
+        methods:["POST","GET"],
         path:"/token"
     }
     resource tokenInbound (http:Request req, http:Response resp) {
