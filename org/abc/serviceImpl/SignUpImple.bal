@@ -2,6 +2,7 @@ package org.abc.serviceImpl;
 
 import ballerina.net.http;
 import org.abc.db as dbops;
+import org.abc.util;
 
 public function handleSignup (http:Request req) (http:Response res) {
 
@@ -23,4 +24,38 @@ public function handleSignup (http:Request req) (http:Response res) {
         res.setStatusCode(403);
     }
     return res;
+}
+
+public function addUser (http:Request req) (http:Response res) {
+
+    res = {};
+    http:Session sesn = req.getSession();
+    if (sesn != null) {
+
+        map formParams = req.getFormParams();
+        var username, err1 = (string)formParams["username"];
+        var passwd, err2 = (string)formParams["password"];
+        println("XXXXX");
+        if (err1 == null || err2 == null) {
+            println("Username : " + username + " Password : " + passwd);
+            var clientid , _= (string)sesn.getAttribute("clientid");
+            var bool, e = util:signUpUser(username, passwd, <string>clientid);
+            println(bool);
+            println(e);
+            println("XXXXX");
+
+            if (e == null && bool) {
+                res.setStatusCode(200);
+            } else {
+                // Generate an Error
+            }
+        } else {
+            // This means that the username and creds are not available
+        }
+    } else {
+        // Invalid session so, send an error
+        res.setStatusCode(403);
+    }
+
+    return;
 }

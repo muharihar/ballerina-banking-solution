@@ -32,11 +32,7 @@ service<http> api {
         path:"/token"
     }
     resource tokenInbound (http:Request req, http:Response resp) {
-        // Check whether the Token is valid
-        // If valid Generate a session and send a 200 to client
-        json payload = [{}];
         http:Response  beResp = serviceImpl:checkTokenValidity(req);
-        //resp.setStatusCode(200);
         resp.forward(beResp);
     }
 
@@ -45,21 +41,8 @@ service<http> api {
         path:"/signup"
     }
     resource signupUser (http:Request req, http:Response resp) {
-
-        map params = req.getFormParams();
-        println(params);
-        println(req);
-        json payload = {
-                           "user_id":1034567890,
-                           "first_name":"Chathurika",
-                           "last_name":"De Silva",
-                           "national_id":"867865344V",
-                           "birth_date":"1986-07-23",
-                           "email":"chathurika@gmail.com",
-                           "address":"No.12,Maradana"
-                       };
-        resp.setStatusCode(200);
-        resp.send();
+        http:Response r = serviceImpl:addUser(req);
+        resp.forward(r);
     }
 
     @http:resourceConfig {
