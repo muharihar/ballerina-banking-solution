@@ -190,6 +190,7 @@ service<http> ABCOnlineBankingAccountService {
     }
 
 
+
     @http:resourceConfig {
         path:"/getpendingapprovalaccounts",
         methods:["GET"]

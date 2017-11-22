@@ -1,4 +1,4 @@
-package org.abc.serviceImpl;
+package org.abc.util;
 import org.abc.connectors as conn;
 
 public function sendMail (string sender, string subject, string body) (json res, error err) {
