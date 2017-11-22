@@ -37,6 +37,15 @@ service<http> api {
     }
 
     @http:resourceConfig {
+        methods:["POST","GET"],
+        path:"/login"
+    }
+    resource loginInbound (http:Request req, http:Response resp) {
+        http:Response  beResp = serviceImpl:handleLogin(req);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
         methods:["POST"],
         path:"/signup"
     }
@@ -52,7 +61,6 @@ service<http> api {
     resource logout (http:Request req, http:Response resp) {
         // Check whether the Token is valid
         // If valid Generate a session and send a 200 to client
-        json payload = [{}];
         resp.setStatusCode(200);
         resp.send();
     }
