@@ -8,11 +8,12 @@ public function logOut (http:Request req) (http:Response res) {
     http:Session sesn = req.getSession();
 
     if (sesn != null) {
-       sesn.invalidate();
+        sesn.invalidate();
         res.setStatusCode(200);
 
     } else {
-        res.setStatusCode(500);
+        // A session doesn't exist
+        res.setStatusCode(200);
     }
     return res;
 }

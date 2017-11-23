@@ -19,3 +19,21 @@ public function getTransactionHistoryDb (int[] accNo) (json data, error er) {
     }
     return;
 }
+
+public function getAccoutsByUserID (int userId) (json data, error er) {
+    endpoint <sql:ClientConnector> ep{
+        initDb();}
+
+    sql:Parameter[] parameters = [];
+    TypeConversionError eb;
+    string accountList = "SELECT Account.acc_number, Account.created_date, Account_Type.account_name, Account_Type.interest_rate, Account.account_status, Account.current_balance FROM Account inner join Account_Type on Account.account_type_id = Account_Type.account_type_id where Account.user_id = ?;";
+    try {
+        sql:Parameter para1 = {sqlType:"integer", value:userId, direction:0};
+        parameters = [para1];
+        datatable dt = ep.select(accountList, parameters);
+        data, eb = <json>dt;
+    } catch (error e) {
+        er = e;
+    }
+    return;
+}
