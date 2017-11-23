@@ -166,7 +166,7 @@ function isAccessTokenExpired () (boolean, error) {
     } catch (error e) {
         msg = {msg:"Error getting the access token"};
     }
-    println(isExpired);
+
     return isExpired, msg;
 }
 

@@ -290,14 +290,6 @@ public function getPendingApprovalAccountList () (json result, error err) {
 
 
 
-public function approveOrRejectAccounts (json batchStatuses) {
-    // update the db and send an email based on the status of the account
-
-
-
-}
-
-
 public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
     endpoint<sql:ClientConnector> ep {
         init();
@@ -307,19 +299,16 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
     sql:Parameter[][] params = [];
 
     int len = lengthof batchStatuses;
-    println("LEN " + len);
     int i = 0;
     int statusId;
 
     while (len > i) {
-        //paramteres = batchStatuses.getKeys();
         var id1, _ = (string)batchStatuses[i].accountNo;
         var id, _ = <int>id1;
-        println(id);
         sql:Parameter paraNum = {sqlType:"integer", value:id, direction:0};
 
         var status, _ = (string)batchStatuses[i].status;
-        println(status);
+
         if (status.equalsIgnoreCase("approved")) {
 
             statusId = cons:ACC_STATUS_ACTIVE;
@@ -331,11 +320,10 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
         } else {
             log:printError("Invalid Account Status");
         }
-       // print(statusId);
+
         sql:Parameter paraStatus = {sqlType:"integer", value:statusId, direction:0};
         para = [paraStatus,paraNum];
         params[i] = para;
-        println(params);
 
         i = i + 1;
     }
@@ -344,7 +332,6 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
 
     try {
         c = ep.batchUpdate(query, params);
-        println(c);
 
     }
     catch (error e) {
@@ -354,6 +341,3 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
 
 }
 
-function sendEmailToUser (string status, string content) {
-
-}
