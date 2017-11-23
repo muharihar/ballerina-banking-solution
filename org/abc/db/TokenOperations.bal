@@ -1,7 +1,7 @@
 package org.abc.db;
 
 import ballerina.util;
-import org.abc.beans ;
+import org.abc.beans;
 import ballerina.log;
 import ballerina.data.sql;
 
@@ -9,7 +9,7 @@ const int TOKEN_VALIDITY_IN_HOURS = 48;
 
 function isValidTokenExistForUserId (int userID) (boolean exist) {
     endpoint
-    <sql:ClientConnector> ep{
+    <sql:ClientConnector> ep {
         initDb();}
     sql:Parameter[] parameters = [];
     string query_tokenInfo = "SELECT TIMESTAMPDIFF(HOUR,(SELECT created_date FROM OTP_Info WHERE user_id=?), now()) < ?;";
@@ -43,7 +43,7 @@ function isValidTokenExistForUserId (int userID) (boolean exist) {
 
 public function isTokenValid (string token) (int userID) {
     endpoint
-    <sql:ClientConnector> ep{
+    <sql:ClientConnector> ep {
         initDb();}
     sql:Parameter[] parameters = [];
     // This Qury checks whether the token is valid, if the token is valid it will return the user_id or will return a 0
@@ -53,7 +53,7 @@ public function isTokenValid (string token) (int userID) {
         sql:Parameter para2 = {sqlType:"integer", value:TOKEN_VALIDITY_IN_HOURS, direction:0};
         sql:Parameter para3 = {sqlType:"varchar", value:token, direction:0};
 
-        parameters = [para1,para2,para3];
+        parameters = [para1, para2, para3];
         datatable dt = ep.select(query_tokenInfo, parameters);
 
         UserID rs;
