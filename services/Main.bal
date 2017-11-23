@@ -224,6 +224,7 @@ service<http> ABCOnlineBankingAccountService {
         http:Response re = {};
         re = sImpl:getAccountHistory(req);
         res.forward(re);
+
     }
 
 
