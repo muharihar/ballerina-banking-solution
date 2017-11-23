@@ -10,7 +10,7 @@ import org.abc.serviceImpl;
 }
 service<http> api {
     @http:resourceConfig {
-        methods:["POST","GET"],
+        methods:["GET"],
         path:"/getuser"
     }
     resource getuser (http:Request req, http:Response resp) {
@@ -28,7 +28,7 @@ service<http> api {
     }
 
     @http:resourceConfig {
-        methods:["POST","GET"],
+        methods:["POST"],
         path:"/token"
     }
     resource tokenInbound (http:Request req, http:Response resp) {
@@ -61,7 +61,25 @@ service<http> api {
     resource logout (http:Request req, http:Response resp) {
         // Check whether the Token is valid
         // If valid Generate a session and send a 200 to client
-        resp.setStatusCode(200);
-        resp.send();
+        http:Response  beResp = serviceImpl:logOut(req);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
+        methods:["GET"],
+        path:"/userprofile"
+    }
+    resource getUserProfile (http:Request req, http:Response resp) {
+        http:Response beResp = serviceImpl:getUserProfile(req);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
+        methods:["GET"],
+        path:"/account/getinfo"
+    }
+    resource getAccountInfo (http:Request req, http:Response resp) {
+        http:Response beResp = serviceImpl:getAccountInfo(req);
+        resp.forward(beResp);
     }
 }

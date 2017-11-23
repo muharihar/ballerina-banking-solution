@@ -8,10 +8,8 @@ public function handleSignup (http:Request req) (http:Response res) {
 
     res = {};
     http:Session sesn = req.getSession();
-
     if (sesn != null) {
         var clientID, _ = (int)sesn.getAttribute("clientid");
-        println(clientID);
         var pl, err = dbops:getUserInfoWithID(clientID);
         pl = pl[0];
         if (err == null) {
@@ -37,13 +35,10 @@ public function addUser (http:Request req) (http:Response res) {
         var passwd, err2 = (string)formParams["password"];
         println("XXXXX");
         if (err1 == null || err2 == null) {
-            println("Username : " + username + " Password : " + passwd);
-            var clientid , _= (string)sesn.getAttribute("clientid");
+            //println("Username : " + username + " Password : " + passwd + );
+            var clientid , _ = (int)sesn.getAttribute("clientid");
+            println("Username : " + username + " Password : " + passwd + " Client ID : " +<string>clientid);
             var bool, e = util:signUpUser(username, passwd, <string>clientid);
-            println(bool);
-            println(e);
-            println("XXXXX");
-
             if (e == null && bool) {
                 res.setStatusCode(200);
             } else {
@@ -56,6 +51,5 @@ public function addUser (http:Request req) (http:Response res) {
         // Invalid session so, send an error
         res.setStatusCode(403);
     }
-
     return;
 }
