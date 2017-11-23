@@ -11,19 +11,24 @@ public function signUpUser (string username, string password, string userid) (bo
     error err;
     http:HttpConnectorError ex;
 
-    var userExist, uExist = ep.isExist(username);
-    println(userExist);
-    if (uExist == null) {
-        if (!userExist) {
-            userAdded, ex = ep.addUser(username, password, userid);
-            err = (error)ex;
-        }
-        else {
-            err = {msg:"User with username: " + username + " already exists"};
-        }
+    if (userid.equalsIgnoreCase("")) {
+        err = {msg:"Valid userid not given."};
     }
     else {
-        err = (error)uExist;
+        var userExist, uExist = ep.isExist(username);
+        println(userExist);
+        if (uExist == null) {
+            if (!userExist) {
+                userAdded, ex = ep.addUser(username, password, userid);
+                err = (error)ex;
+            }
+            else {
+                err = {msg:"User with username: " + username + " already exists"};
+            }
+        }
+        else {
+            err = (error)uExist;
+        }
     }
     return userAdded, err;
 }
@@ -58,7 +63,7 @@ public function sendMail (string accessToken, string sender, string subject, str
         create con:GmailConnector(accessToken);
     }
 
-    var mailSent, ex = ep.sendMail(sender, subject, "dilinisg@gmail.com", body , "", "", "", "");
+    var mailSent, ex = ep.sendMail(sender, subject, "dilinisg@gmail.com", body, "", "", "", "");
 
     if (ex == null) {
         res = mailSent;
