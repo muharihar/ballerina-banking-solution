@@ -212,22 +212,6 @@ service<http> ABCOnlineBankingAccountService {
             res.setJsonPayload(valueToReturn);
         }
 
-        float val;
-        float val2;
-        error err2;
-        error err1;
-        val, err2 = utils:getExchangeRate("USD","LKR");
-        val2, err1 = utils:getExchangeRateValue("USD","LKR", 5);
-        println(val);
-        println(err2);
-
-        println(val2);
-        println(err1);
-
-        int[] acc = [114565456];
-        utils:writeToCSV(acc);
-        println("ss");
-
         res.send();
     }
 
