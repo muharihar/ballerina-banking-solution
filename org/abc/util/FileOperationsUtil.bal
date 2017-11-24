@@ -1,12 +1,16 @@
 
 package org.abc.util;
-import ballerina.net.ftp;
 import ballerina.file;
 import ballerina.log;
+import ballerina.net.ftp;
 import ballerina.io;
 import org.abc as cons;
 import ballerina.util;
+import org.abc.db as dbOps;
+
+
 string[] acceptedContentTypes = ["application/pdf","text/csv","text/plain","application/msword","multipart/form-data","image/jpeg"];
+
 public function checkContentType(string contentType) (boolean) {
     int arrayLength = lengthof acceptedContentTypes;
     int i = 0;
@@ -20,6 +24,7 @@ public function checkContentType(string contentType) (boolean) {
     }
     return status;
 }
+
 public function writeToFile(blob content,string contentType,string userid) (error err) {
     //endpoint<ftp:FTPClient> fileEp { create ftp:FTPClient();}
     string extension;
@@ -109,4 +114,44 @@ function readFromFile(string filename)(blob, error) {
         println(numberOfBytesRead);
     }
     return content, eb;
+}
+
+
+public function writeToCSV (int[] accNo) {
+    //TODO - write to csv and pdf
+    json payload;
+    error e;
+    payload, e = dbOps:getTransactionHistoryDb(accNo);
+    string textdb = payload.toString();
+    string text = "my name is dilini";
+    io:CharacterChannel destinationChannel = getFileCharacterChannel("./sampleResponse.pdf", "w", "UTF-8");
+    var var1 = destinationChannel.writeCharacters(text,0);
+}
+
+function getFileCharacterChannel (string filePath, string permission, string encoding)
+(io:CharacterChannel) {
+    file:File src = {path:filePath};
+    io:ByteChannel channel = src.openChannel(permission);
+    io:CharacterChannel characterChannel = channel.toCharacterChannel(encoding);
+    return characterChannel;
+}
+
+
+public function writeToPDF (int[] accNo) {
+
+    json payload;
+    error e;
+    payload, e = dbOps:getTransactionHistoryDb(accNo);
+    string textdb = payload.toString();
+    string text = "my name is dilini";
+    blob content = text.toBlob("UTF-8");
+    io:ByteChannel destinationChannel = getFileByteChannel("./sampleResponse.pdf", "w", "UTF-8");
+    var var1 = destinationChannel.writeBytes(content, 0);
+}
+
+function getFileByteChannel (string filePath, string permission, string encoding)
+(io:ByteChannel) {
+    file:File src = {path:filePath};
+    io:ByteChannel channel = src.openChannel(permission);
+    return channel;
 }
