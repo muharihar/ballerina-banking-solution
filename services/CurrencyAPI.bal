@@ -11,7 +11,7 @@ service<http> ABCOnlineBankingCurrencyService {
 
     @http:resourceConfig {
         methods:["GET"],
-        path:"/getExchangeRate/{base}/{to}"
+            path:"/getExchangeRate/{base}/{to}"
     }
     resource getExchangeRate (http:Request req, http:Response res, string base, string to) {
 
