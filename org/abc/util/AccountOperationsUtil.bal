@@ -2,8 +2,6 @@ package org.abc.util;
 
 import org.abc.db as dbOps;
 import org.abc;
-import ballerina.io;
-import ballerina.file;
 
 public function getAccountBalanceByAccNumber (string accNo) {
     //Following converts the string input to int
@@ -28,20 +26,6 @@ public function getAccountHistoryUtil (json payload) (json data, error e) {
 }
 
 
-public function writeToCSV (int[] accNo) {
-
-    json payload;
-    error e;
-    payload, e = dbOps:getTransactionHistoryDb(accNo);
-    string textdb = payload.toString();
-    string[] text = ["my name is dilini"];
-    // blob content = text.toBlob("UTF-16");
-    io:TextRecordChannel destinationChannel = getFileCharacterChannel("./sampleResponse.pdf", "w", "UTF-8");
-    //io:ByteChannel destinationChannel = getFileCharacterChannel("./sampleResponse.pdf", "w", "UTF-8");
-    var var1 = destinationChannel.writeTextRecord(text);
-    println("ssddddwww" + var1);
-}
-
 public function getAccountInfoList (int userId) (json j, error e) {
     j, e = dbOps:getAccoutsByUserID(userId);
     if (e == null) {
@@ -63,28 +47,4 @@ public function getAccountInfoList (int userId) (json j, error e) {
         //println(j);
     }
     return;
-}
-
-function getFileCharacterChannel (string filePath, string permission, string encoding)
-(io:CharacterChannel) {
-    file:File src = {path:filePath};
-    io:ByteChannel channel = src.openChannel(permission);
-    io:CharacterChannel characterChannel = channel.toCharacterChannel(encoding);
-    return characterChannel;
-   // return channel;
-}
-
-
-public function writeToPDF (int[] accNo) {
-
-    json payload;
-    error e;
-    payload, e = dbOps:getTransactionHistoryDb(accNo);
-    string textdb = payload.toString();
-    string text = "my name is dilini";
-    blob content = text.toBlob("UTF-8");
-    //io:CharacterChannel destinationChannel = getFileCharacterChannel("./sampleResponse.pdf", "w", "UTF-8");
-    io:ByteChannel destinationChannel = getFileCharacterChannel("./sampleResponse.pdf", "w", "UTF-8");
-    var var1 = destinationChannel.writeBytes(content, 0);
-    println("ssddddwww" + var1);
 }
