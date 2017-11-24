@@ -52,23 +52,3 @@ public function loginUser (string username, string password) (string, error) {
     return userid, err;
 }
 
-
-public function sendMail (string accessToken, string sender, string subject, string body) (json res, error err) {
-    endpoint<con:GmailConnector> ep {
-        create con:GmailConnector(accessToken);
-    }
-
-    var mailSent, ex = ep.sendMail(sender, subject, "dilinisg@gmail.com", body , "", "", "", "");
-
-    if (ex == null) {
-        res = mailSent;
-    }
-    else {
-        err = (error)ex;
-    }
-
-    return;
-}
-
-
-
