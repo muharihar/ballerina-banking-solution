@@ -1,6 +1,5 @@
 package org.abc;
 
-
 const int ACC_STATUS_ACTIVE = 1;
 const int ACC_STATUS_APPROVAL_PENDING = 2;
 const int ACC_STATUS_INACTIVE = 3;
