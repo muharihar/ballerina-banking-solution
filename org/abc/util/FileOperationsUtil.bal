@@ -2,6 +2,7 @@
 package org.abc.util;
 import ballerina.file;
 import ballerina.log;
+import ballerina.net.ftp;
 import ballerina.io;
 import org.abc as cons;
 import ballerina.util;
