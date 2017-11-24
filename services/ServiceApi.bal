@@ -10,7 +10,7 @@ import org.abc.serviceImpl;
 }
 service<http> api {
     @http:resourceConfig {
-        methods:["POST","GET"],
+        methods:["GET"],
         path:"/getuser"
     }
     resource getuser (http:Request req, http:Response resp) {
@@ -28,15 +28,20 @@ service<http> api {
     }
 
     @http:resourceConfig {
-        methods:["POST","GET"],
+        methods:["POST"],
         path:"/token"
     }
     resource tokenInbound (http:Request req, http:Response resp) {
-        // Check whether the Token is valid
-        // If valid Generate a session and send a 200 to client
-        json payload = [{}];
         http:Response  beResp = serviceImpl:checkTokenValidity(req);
-        //resp.setStatusCode(200);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
+        methods:["POST","GET"],
+        path:"/login"
+    }
+    resource loginInbound (http:Request req, http:Response resp) {
+        http:Response  beResp = serviceImpl:handleLogin(req);
         resp.forward(beResp);
     }
 
@@ -45,21 +50,8 @@ service<http> api {
         path:"/signup"
     }
     resource signupUser (http:Request req, http:Response resp) {
-
-        map params = req.getFormParams();
-        println(params);
-        println(req);
-        json payload = {
-                           "user_id":1034567890,
-                           "first_name":"Chathurika",
-                           "last_name":"De Silva",
-                           "national_id":"867865344V",
-                           "birth_date":"1986-07-23",
-                           "email":"chathurika@gmail.com",
-                           "address":"No.12,Maradana"
-                       };
-        resp.setStatusCode(200);
-        resp.send();
+        http:Response r = serviceImpl:addUser(req);
+        resp.forward(r);
     }
 
     @http:resourceConfig {
@@ -69,8 +61,25 @@ service<http> api {
     resource logout (http:Request req, http:Response resp) {
         // Check whether the Token is valid
         // If valid Generate a session and send a 200 to client
-        json payload = [{}];
-        resp.setStatusCode(200);
-        resp.send();
+        http:Response  beResp = serviceImpl:logOut(req);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
+        methods:["GET"],
+        path:"/userprofile"
+    }
+    resource getUserProfile (http:Request req, http:Response resp) {
+        http:Response beResp = serviceImpl:getUserProfile(req);
+        resp.forward(beResp);
+    }
+
+    @http:resourceConfig {
+        methods:["GET"],
+        path:"/account/getinfo"
+    }
+    resource getAccountInfo (http:Request req, http:Response resp) {
+        http:Response beResp = serviceImpl:getAccountInfo(req);
+        resp.forward(beResp);
     }
 }
