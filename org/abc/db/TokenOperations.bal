@@ -9,8 +9,8 @@ const int TOKEN_VALIDITY_IN_HOURS = 48;
 
 function isValidTokenExistForUserId (int userID) (boolean exist) {
     endpoint
-    <sql:ClientConnector> ep {
-        initDb();}
+    <sql:ClientConnector> ep {}
+    bind sqlCon with ep;
     sql:Parameter[] parameters = [];
     string query_tokenInfo = "SELECT TIMESTAMPDIFF(HOUR,(SELECT created_date FROM OTP_Info WHERE user_id=?), now()) < ?;";
     TypeCastError ex;
@@ -43,8 +43,8 @@ function isValidTokenExistForUserId (int userID) (boolean exist) {
 
 public function isTokenValid (string token) (int userID) {
     endpoint
-    <sql:ClientConnector> ep {
-        initDb();}
+    <sql:ClientConnector> ep {}
+    bind sqlCon with ep;
     sql:Parameter[] parameters = [];
     // This Qury checks whether the token is valid, if the token is valid it will return the user_id or will return a 0
     string query_tokenInfo = "select if(TIMESTAMPDIFF(HOUR,(SELECT created_date FROM OTP_Info WHERE otp_id=?), now()) < ?, (select user_id from OTP_Info where otp_id = ?), 0) AS user_id;";
