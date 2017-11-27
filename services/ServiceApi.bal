@@ -24,7 +24,7 @@ service<http> api {
         //                   "address":"No.12,Maradana"
         //               };
         http:Response beResp = serviceImpl:handleSignup(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
@@ -33,7 +33,7 @@ service<http> api {
     }
     resource tokenInbound (http:Request req, http:Response resp) {
         http:Response  beResp = serviceImpl:checkTokenValidity(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
@@ -42,7 +42,7 @@ service<http> api {
     }
     resource loginInbound (http:Request req, http:Response resp) {
         http:Response  beResp = serviceImpl:handleLogin(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
@@ -51,7 +51,7 @@ service<http> api {
     }
     resource signupUser (http:Request req, http:Response resp) {
         http:Response r = serviceImpl:addUser(req);
-        resp.forward(r);
+        _ = resp.forward(r);
     }
 
     @http:resourceConfig {
@@ -62,7 +62,7 @@ service<http> api {
         // Check whether the Token is valid
         // If valid Generate a session and send a 200 to client
         http:Response  beResp = serviceImpl:logOut(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
@@ -71,7 +71,7 @@ service<http> api {
     }
     resource getUserProfile (http:Request req, http:Response resp) {
         http:Response beResp = serviceImpl:getUserProfile(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
@@ -80,6 +80,6 @@ service<http> api {
     }
     resource getAccountInfo (http:Request req, http:Response resp) {
         http:Response beResp = serviceImpl:getAccountInfo(req);
-        resp.forward(beResp);
+        _ = resp.forward(beResp);
     }
 }

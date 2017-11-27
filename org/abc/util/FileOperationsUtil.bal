@@ -2,7 +2,6 @@
 package org.abc.util;
 import ballerina.file;
 import ballerina.log;
-import ballerina.net.ftp;
 import ballerina.io;
 import org.abc as cons;
 import ballerina.util;
@@ -80,7 +79,7 @@ public function encryptBlobContent(blob toEncrypt) (blob encrypted,error e) {
     string blobContent;
     try {
         blobContent = toEncrypt.toString("UTF-8");
-        string encodedString = util:base64encode(blobContent);
+        string encodedString = util:base64Encode(blobContent);
         encrypted = encodedString.toBlob("UTF-8");
     }
     catch(error err) {
@@ -92,7 +91,7 @@ function decryptBlobContent(blob toDecrypt) (blob decrypted,error e) {
     string blobContent;
     try {
         blobContent = toDecrypt.toString("UTF-8");
-        string decodedString = util:base64decode(blobContent);
+        string decodedString = util:base64Decode(blobContent);
         decrypted = decodedString.toBlob("UTF-8");
     }
     catch(error err) {

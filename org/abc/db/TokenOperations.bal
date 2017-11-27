@@ -19,7 +19,7 @@ function isValidTokenExistForUserId (int userID) (boolean exist) {
 
     // try {
     //     //Checking token existence against user id in database
-    //     sql:Parameter para1 = {sqlType:"integer", value:userID, direction:0};
+    //     sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userID, direction:sql:Direction.IN};
     //     parameters = [para1];
     //     datatable dt = ep.select(query_tokenInfo, parameters);
 
@@ -49,9 +49,9 @@ public function isTokenValid (string token) (int userID) {
     // This Qury checks whether the token is valid, if the token is valid it will return the user_id or will return a 0
     string query_tokenInfo = "select if(TIMESTAMPDIFF(HOUR,(SELECT created_date FROM OTP_Info WHERE otp_id=?), now()) < ?, (select user_id from OTP_Info where otp_id = ?), 0) AS user_id;";
     try {
-        sql:Parameter para1 = {sqlType:"varchar", value:token, direction:0};
-        sql:Parameter para2 = {sqlType:"integer", value:TOKEN_VALIDITY_IN_HOURS, direction:0};
-        sql:Parameter para3 = {sqlType:"varchar", value:token, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.VARCHAR, value:token, direction:sql:Direction.IN};
+        sql:Parameter para2 = {sqlType:sql:Type.INTEGER, value:TOKEN_VALIDITY_IN_HOURS, direction:sql:Direction.IN};
+        sql:Parameter para3 = {sqlType:sql:Type.VARCHAR, value:token, direction:sql:Direction.IN};
 
         parameters = [para1, para2, para3];
         datatable dt = ep.select(query_tokenInfo, parameters);

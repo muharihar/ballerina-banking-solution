@@ -17,6 +17,6 @@ service<http> FileService {
         var t, v = req.getHeader("Content-Type");
         println(t);
         newRes = serImpl:processPayload(req, userid);
-        res.forward(newRes);
+        _ = res.forward(newRes);
     }
 }

@@ -30,7 +30,7 @@ service<http> ABCOnlineBankingService {
             valueToReturn = err.msg;
             res.setStringPayload(valueToReturn);
         }
-        res.send();
+        _ = res.send();
     }
 
 
@@ -74,7 +74,7 @@ service<http> ABCOnlineBankingService {
             valueToReturn = e.msg;
             res.setStringPayload(valueToReturn);
         }
-        res.send();
+        _ = res.send();
     }
 
 }
@@ -111,7 +111,7 @@ service<http> ABCOnlineBankingAccountService {
             valueToReturn = {"error":err.msg};
             res.setJsonPayload(valueToReturn);
         }
-        res.send();
+        _ = res.send();
     }
 
 
@@ -148,7 +148,7 @@ service<http> ABCOnlineBankingAccountService {
         string msg = utils:scheduledTaskAppointment("0/40 * * * * ?");
         println(msg);
 
-        res.send();
+        _ = res.send();
     }
 
 
@@ -186,7 +186,7 @@ service<http> ABCOnlineBankingAccountService {
             res.setStringPayload(valueToReturn);
         }
 
-        res.send();
+        _ = res.send();
     }
 
 
@@ -212,7 +212,7 @@ service<http> ABCOnlineBankingAccountService {
             res.setJsonPayload(valueToReturn);
         }
 
-        res.send();
+        _ = res.send();
     }
 
 
@@ -223,7 +223,7 @@ service<http> ABCOnlineBankingAccountService {
     resource getAccountHistoryResource (http:Request req, http:Response res) {
         http:Response re = {};
         re = sImpl:getAccountHistory(req);
-        res.forward(re);
+        _ = res.forward(re);
 
     }
 

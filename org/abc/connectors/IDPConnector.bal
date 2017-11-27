@@ -125,7 +125,7 @@ public connector IDPConnector () {
 }
 function getEncodedValue(string value1,string value2) (string encodedString) {
     string toEncode = value1 + ":" + value2;
-    encodedString = util:base64encode(toEncode);
+    encodedString = util:base64Encode(toEncode);
     return ;
 }
 function init() (http:HttpClient idpEndpoint) {
