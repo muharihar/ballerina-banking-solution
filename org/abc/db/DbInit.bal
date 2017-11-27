@@ -2,6 +2,8 @@ package org.abc.db;
 
 import ballerina.data.sql;
 
+public sql:ClientConnector sqlCon = initDb();
+
 function initDb() (sql:ClientConnector connInit){
     string mysqlHostName = "192.168.48.209";
     int mysqlPort = 3306;
