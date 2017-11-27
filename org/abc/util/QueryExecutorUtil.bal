@@ -20,7 +20,7 @@ function getUserID (int accountNumber) (int userID, error err) {
 
     try {
         //Obtaining user id from the database by passing the account no
-        sql:Parameter para1 = {sqlType:"integer", value:accountNumber, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:accountNumber, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query_account, parameters);
         while (dt.hasNext()) {
@@ -52,7 +52,7 @@ function checkTokenExistance (int userID) (boolean exist, string otpCreatedTime,
 
     try {
         //Checking token existence against user id in database
-        sql:Parameter para1 = {sqlType:"integer", value:userID, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userID, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query_tokenInfo, parameters);
 
@@ -89,9 +89,9 @@ function insertGenToken (int userid, string token) {
 
     try {
         //Inserting generated token to database
-        sql:Parameter para1 = {sqlType:"varchar", value:token, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.VARCHAR, value:token, direction:sql:Direction.IN};
         //sql:Parameter para2 = {sqlType:"timestamp", value:currentTimestamp, direction:0};
-        sql:Parameter para3 = {sqlType:"integer", value:userid, direction:0};
+        sql:Parameter para3 = {sqlType:sql:Type.INTEGER, value:userid, direction:sql:Direction.IN};
         //parameters = [para1, para2, para3];
         parameters = [para1, para3];
         var count, ids = ep.updateWithGeneratedKeys(query_tokenInfo, parameters, null);
@@ -111,7 +111,7 @@ public function getCustomerInfo (int userid) (json result, error err) {
 
     try {
         //Obtaining customer information by passing userid
-        sql:Parameter para1 = {sqlType:"integer", value:userid, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userid, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query_customerInfo, parameters);
         var j, _ = <json>dt;
@@ -133,7 +133,7 @@ public function getBalanceByAccountNumber (int accountNumber) (float balance, er
     string query = "SELECT current_balance from Account WHERE acc_number=?";
 
     try {
-        sql:Parameter para1 = {sqlType:"integer", value:accountNumber, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:accountNumber, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query, parameters);
         while (dt.hasNext()) {
@@ -173,7 +173,7 @@ public function getBalanceByUser (int userid) (json balance, error err, bError:B
     string query = "SELECT acc_number, current_balance from Account WHERE user_id=?";
 
     try {
-        sql:Parameter para1 = {sqlType:"integer", value:userid, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userid, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query, parameters);
         balance, er = <json>dt;
@@ -202,7 +202,7 @@ public function cleanupOTP () (error err) {
     string query = "delete from OTP_Info where created_date < ?";
 
     try {
-        sql:Parameter para1 = {sqlType:"timestamp", value:tmSub, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.TIMESTAMP, value:tmSub, direction:sql:Direction.IN};
         parameters = [para1];
         int dt = ep.update(query, parameters);
         log:printInfo("Executed Cleanup OTP Task and deleted " + dt + " OTP numbers");
@@ -234,12 +234,12 @@ public function createNewAccount (int userId, int accountType, int currency) (st
     sql:Parameter[] parameters = [];
 
     try {
-        sql:Parameter para1 = {sqlType:"timestamp", value:time, direction:0};
-        sql:Parameter para2 = {sqlType:"float", value:currentBalance, direction:0};
-        sql:Parameter para3 = {sqlType:"integer", value:userId, direction:0};
-        sql:Parameter para4 = {sqlType:"integer", value:accountType, direction:0};
-        sql:Parameter para5 = {sqlType:"integer", value:currency, direction:0};
-        sql:Parameter para6 = {sqlType:"integer", value:accStatus, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
+        sql:Parameter para2 = {sqlType:sql:Type.FLOAT, value:currentBalance, direction:sql:Direction.IN};
+        sql:Parameter para3 = {sqlType:sql:Type.INTEGER, value:userId, direction:sql:Direction.IN};
+        sql:Parameter para4 = {sqlType:sql:Type.INTEGER, value:accountType, direction:sql:Direction.IN};
+        sql:Parameter para5 = {sqlType:sql:Type.INTEGER, value:currency, direction:sql:Direction.IN};
+        sql:Parameter para6 = {sqlType:sql:Type.INTEGER, value:accStatus, direction:sql:Direction.IN};
 
         parameters = [para1, para2, para3, para4, para5, para6];
         int dt = ep.update(query, parameters);
@@ -271,7 +271,7 @@ public function getPendingApprovalAccountList () (json result, error err) {
     string query = "select * from Account where account_status=?";
 
     try {
-        sql:Parameter para1 = {sqlType:"integer", value:accStatus, direction:0};
+        sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:accStatus, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query, parameters);
         result, er = <json>dt;
@@ -305,7 +305,7 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
     while (len > i) {
         var id1, _ = (string)batchStatuses[i].accountNo;
         var id, _ = <int>id1;
-        sql:Parameter paraNum = {sqlType:"integer", value:id, direction:0};
+        sql:Parameter paraNum = {sqlType:sql:Type.INTEGER, value:id, direction:sql:Direction.IN};
 
         var status, _ = (string)batchStatuses[i].status;
 
@@ -321,7 +321,7 @@ public function updateAccountStatus (json batchStatuses)(int[] c, error err) {
             log:printError("Invalid Account Status");
         }
 
-        sql:Parameter paraStatus = {sqlType:"integer", value:statusId, direction:0};
+        sql:Parameter paraStatus = {sqlType:sql:Type.INTEGER, value:statusId, direction:sql:Direction.IN};
         para = [paraStatus,paraNum];
         params[i] = para;
 

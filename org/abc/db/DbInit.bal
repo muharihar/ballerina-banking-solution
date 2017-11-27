@@ -11,7 +11,7 @@ function initDb() (sql:ClientConnector connInit){
     map props = {verifyServerCertificate:false,useSSL:false};
  
     sql:ConnectionProperties propertiesInit = {maximumPoolSize:5, connectionTimeout:300000, datasourceProperties:props};
-    connInit = create sql:ClientConnector( sql:MYSQL, mysqlHostName, mysqlPort, mysqlDatabase, mysqlUserName, mysqlPassword, propertiesInit);
+    connInit = create sql:ClientConnector( sql:DB.MYSQL, mysqlHostName, mysqlPort, mysqlDatabase, mysqlUserName, mysqlPassword, propertiesInit);
     return;
 }
 

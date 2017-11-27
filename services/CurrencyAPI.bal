@@ -25,7 +25,7 @@ service<http> ABCOnlineBankingCurrencyService {
             response = {"error":err.msg};
             res.setJsonPayload(response);
         }
-        res.send();
+        _ = res.send();
     }
 
 
@@ -46,6 +46,6 @@ service<http> ABCOnlineBankingCurrencyService {
             response = {"error":err.msg};
             res.setJsonPayload(response);
         }
-        res.send();
+        _ = res.send();
     }
 }

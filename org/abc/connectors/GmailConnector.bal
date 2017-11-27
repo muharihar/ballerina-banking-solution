@@ -69,7 +69,7 @@ public connector GmailConnector () {
         }
 
 
-        string encodedRequest = util:base64encode(concatRequest);
+        string encodedRequest = util:base64Encode(concatRequest);
         json sendMailRequest = {"raw":encodedRequest};
         string sendMailPath = "/v1/users/me/messages/send";
         request.setHeader("Authorization", "Bearer " + access_token);
