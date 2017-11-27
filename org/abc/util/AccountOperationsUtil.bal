@@ -15,7 +15,6 @@ public function getAccountHistoryUtil (json payload) (json data, error e) {
     lengthOfJson = lengthof payload;
     int[] accNos = [];
     TypeConversionError ex;
-
     while (i < lengthOfJson) {
         json j = payload[i].acc_no;
         var accN = payload[i].acc_no.toString();
@@ -25,6 +24,7 @@ public function getAccountHistoryUtil (json payload) (json data, error e) {
     data, e = dbOps:getTransactionHistoryDb(accNos);
     return;
 }
+
 
 public function getAccountInfoList (int userId) (json j, error e) {
     j, e = dbOps:getAccoutsByUserID(userId);
@@ -48,4 +48,3 @@ public function getAccountInfoList (int userId) (json j, error e) {
     }
     return;
 }
-

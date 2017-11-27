@@ -52,8 +52,3 @@ public function loginUser (string username, string password) (string, error) {
     return userid, err;
 }
 
-
-
-
-
-
