@@ -60,7 +60,6 @@ public function isTokenValid (string token) (int userID) {
         while (dt.hasNext()) {
             //exist = true;
             any dataStruct = dt.getNext();
-            println(dataStruct);
             TypeCastError e;
             rs, _ = (UserID)dataStruct;
             userID = rs.user_id;

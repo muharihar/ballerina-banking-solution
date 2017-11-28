@@ -25,6 +25,14 @@ public function getAccountHistoryUtil (json payload) (json data, error e) {
     return;
 }
 
+public function getAccountHistoryByAccNo (int accNo) (json data, error e) {
+    int[] accNos = [];
+    accNos[0] = accNo;
+    println(accNo);
+    data, e = dbOps:getTransactionHistoryDb(accNos);
+    return;
+}
+
 
 public function getAccountInfoList (int userId) (json j, error e) {
     j, e = dbOps:getAccoutsByUserID(userId);
@@ -44,7 +52,6 @@ public function getAccountInfoList (int userId) (json j, error e) {
             }
             i = i + 1;
         }
-        //println(j);
     }
     return;
 }
