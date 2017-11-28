@@ -12,7 +12,6 @@ public function getUserInfoWithID(int userid)(json result, error err){
 
     try {
         //Obtaining customer information by passing userid
-        println("Arrived QQQQQQQQQQQQQQQ");
         sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userid, direction:sql:Direction.IN};
         parameters = [para1];
         datatable dt = ep.select(query_customerInfo, parameters);
