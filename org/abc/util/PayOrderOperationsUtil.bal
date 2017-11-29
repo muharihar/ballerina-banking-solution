@@ -79,7 +79,6 @@ public function listPayOrders (int userid) (json, error) {
         accountArray[i], eb = (int)accountList[i].acc_number;
         i = i + 1;
     }
-    println(accountArray[0]);
     list, er = dbOps:listPayOrdersDb(accountArray);
     i = 0;
     l = 0;
