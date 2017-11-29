@@ -29,17 +29,19 @@ public function insertPayOrderToDb (float transAmount, int transDay, int fromAcc
     return;
 }
 
-public function listPayOrdersDb()(json, error){
+public function listPayOrdersDb(int[] ar)(json, error){
     endpoint<sql:ClientConnector> ep {}
     bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
-    string payOrderListQuery = "SELECT * FROM Pay_Orders";
+    string payOrderListQuery = "SELECT * FROM Pay_Orders WHERE acc_number IN (?)";
     json payOrderList;
     error err;
     TypeConversionError typeError;
 
     try {
+        sql:Parameter paraAccount = {sqlType:sql:Type.INTEGER, value:ar, direction:sql:Direction.IN};
+        parameters = [paraAccount];
         datatable dt = ep.select(payOrderListQuery, parameters);
         payOrderList, typeError = <json>dt;
         if (typeError != null){
