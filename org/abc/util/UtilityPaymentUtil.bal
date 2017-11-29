@@ -205,12 +205,7 @@ function initHSBC () (http:HttpClient ep) {
     return;
 }
 function initBankOfDialog () (http:HttpClient ep) {
-    // http:Options op = {};
-    // http:timeout timeout = { valueMillis: 10000 };
-    // http:options options = { timeoutConfig: timeout };
-    // http:retry retry = { maxRetryCount: 4, retryDuration: 20000 };
-    // http:options options2 = { retryConfig: retry };
     string baseURL = "http://localhost:8080/RESTfulService/mock/bankService";
-    ep = create http:HttpClient(baseURL, {});
+    ep = create http:HttpClient(baseURL, {endpointTimeout: 50, retryConfig:{count:3, interval:200}});
     return;
 }
