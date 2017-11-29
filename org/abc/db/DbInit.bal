@@ -12,7 +12,6 @@ function initDb() (sql:ClientConnector connInit){
     //string mysqlUserName = "root";
     //string mysqlPassword = "root";
     string mysqlHostName = config:getGlobalValue("database.host");
-    println(mysqlHostName);
     var mysqlPort, _ = <int>config:getGlobalValue("database.port");
     string mysqlDatabase = config:getGlobalValue("database.name");
     string mysqlUserName = config:getGlobalValue("database.username");

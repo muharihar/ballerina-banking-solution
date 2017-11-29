@@ -134,7 +134,6 @@ function init() (http:HttpClient idpEndpoint) {
     string hostname = config:getGlobalValue("idp.host");
     string port = config:getGlobalValue("idp.port");
     string url = string `https://{{hostname}}:{{port}}/services`;
-    println(url);
     //string url = "https://localhost:8909/services";
     idpEndpoint = create http:HttpClient(url,{});
     return ;
