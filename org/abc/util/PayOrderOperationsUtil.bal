@@ -66,6 +66,13 @@ public function registerPayOrder (string payAmount, string day, string fromAcNo,
     return;
 }
 
+public function listPayOrders()(json, error){
+    json list;
+    error er;
+    list, er = dbOps:listPayOrders();
+    return list, er;
+}
+
 
 public function payOderScheduleMonthlyTaskTimer () (error err) {
     string appTid;

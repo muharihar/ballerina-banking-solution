@@ -29,6 +29,29 @@ public function insertPayOrderToDb (float transAmount, int transDay, int fromAcc
     return;
 }
 
+public function listPayOrders()(json, error){
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
+
+    sql:Parameter[] parameters = [];
+    string payOrderListQuery = "SELECT * FROM Pay_Orders";
+    json payOrderList;
+    error err;
+    TypeConversionError typeError;
+
+    try {
+        datatable dt = ep.select(payOrderListQuery, parameters);
+        payOrderList, typeError = <json>dt;
+        if (typeError != null){
+                 err = (error)typeError;
+             }
+    } catch (error e) {
+        err = e;
+    }
+    return payOrderList, err;
+}
+
+
 public function executeMonthlyPayOrder () (error err) {
     endpoint<sql:ClientConnector> ep {}
     bind sqlCon with ep;
