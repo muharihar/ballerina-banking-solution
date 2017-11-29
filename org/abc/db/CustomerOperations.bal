@@ -4,7 +4,9 @@ import ballerina.data.sql;
 
 public function getUserInfoWithID(int userid)(json result, error err){
 
-    endpoint<sql:ClientConnector> ep { initDb(); }
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
+
     sql:Parameter[] parameters = [];
     string query_customerInfo = "SELECT * FROM Customer_Info WHERE user_id=?";
 

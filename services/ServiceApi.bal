@@ -82,4 +82,15 @@ service<http> api {
         http:Response beResp = serviceImpl:getAccountInfo(req);
         _ = resp.forward(beResp);
     }
+
+    @http:resourceConfig {
+        path:"/accounthistory",
+        methods:["GET"]
+    }
+    resource getAccountHistoryResource (http:Request req, http:Response res) {
+        http:Response re = {};
+        re = serviceImpl:getAccountHistoryByAcc(req);
+        _ = res.forward(re);
+
+    }
 }

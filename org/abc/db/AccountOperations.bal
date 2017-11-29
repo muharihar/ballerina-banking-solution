@@ -3,8 +3,8 @@ import ballerina.data.sql;
 
 
 public function getTransactionHistoryDb (int[] accNo) (json data, error er) {
-    endpoint <sql:ClientConnector> ep{
-        initDb();}
+    endpoint <sql:ClientConnector> ep{}
+    bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
     TypeConversionError eb;
@@ -21,8 +21,8 @@ public function getTransactionHistoryDb (int[] accNo) (json data, error er) {
 }
 
 public function getAccoutsByUserID (int userId) (json data, error er) {
-    endpoint <sql:ClientConnector> ep{
-        initDb();}
+    endpoint <sql:ClientConnector> ep{}
+    bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
     TypeConversionError eb;
