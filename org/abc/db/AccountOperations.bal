@@ -1,9 +1,10 @@
 package org.abc.db;
 import ballerina.data.sql;
+import org.abc as cons;
 
 
 public function getTransactionHistoryDb (int[] accNo) (json data, error er) {
-    endpoint <sql:ClientConnector> ep{}
+    endpoint<sql:ClientConnector> ep {}
     bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
@@ -21,7 +22,7 @@ public function getTransactionHistoryDb (int[] accNo) (json data, error er) {
 }
 
 public function getAccoutsByUserID (int userId) (json data, error er) {
-    endpoint <sql:ClientConnector> ep{}
+    endpoint<sql:ClientConnector> ep {}
     bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
@@ -39,20 +40,58 @@ public function getAccoutsByUserID (int userId) (json data, error er) {
 }
 
 public function updateAccountBalanceByAccountNo (int accountNo, float balance) (int result, error er) {
-    endpoint <sql:ClientConnector> ep{
-        initDb();}
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
 
     sql:Parameter[] parameters = [];
 
-    TypeConversionError eb;
     string updateBalance = "UPDATE Account SET current_balance=? WHERE acc_number=?";
     try {
         sql:Parameter para1 = {sqlType:sql:Type.FLOAT, value:balance, direction:sql:Direction.IN};
         sql:Parameter para2 = {sqlType:sql:Type.INTEGER, value:accountNo, direction:sql:Direction.IN};
-        parameters = [para1,para2];
+        parameters = [para1, para2];
         result = ep.update(updateBalance, parameters);
     } catch (error e) {
         er = e;
     }
     return;
+}
+
+public function insertTransactions (float amount, string provider, int payOrder, int accountNo, int currency) (int result, error er) {
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
+
+    sql:Parameter[] parameters = [];
+    int providerID;
+
+    if (provider.equalsIgnoreCase("Dialog")) {
+        providerID = cons:UTILITY_DIALOG;
+    } else if (provider.equalsIgnoreCase("Mobitel")) {
+        providerID = cons:UTILITY_MOBITEL;
+    } else if (provider.equalsIgnoreCase("HSBC")) {
+        providerID = cons:UTILITY_HSBC;
+    } else {
+        providerID = cons:UTILITY_OTHER;
+    }
+
+    Time time = currentTime();
+
+    string insertTrans = "INSERT into Transactions (transaction_amount,transaction_date,utility_provider_id,pay_order_id,acc_number,currency_id) VALUES (?,?,?,?,?,?)";
+    try {
+        sql:Parameter para1 = {sqlType:sql:Type.FLOAT, value:amount, direction:sql:Direction.IN};
+        sql:Parameter para2 = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
+        sql:Parameter para3 = {sqlType:sql:Type.INTEGER, value:providerID, direction:sql:Direction.IN};
+        sql:Parameter para4 = {sqlType:sql:Type.INTEGER, value:payOrder, direction:sql:Direction.IN};
+        sql:Parameter para5 = {sqlType:sql:Type.INTEGER, value:accountNo, direction:sql:Direction.IN};
+        sql:Parameter para6 = {sqlType:sql:Type.INTEGER, value:currency, direction:sql:Direction.IN};
+
+        parameters = [para1, para2, para3, para4, para5, para6];
+
+        result = ep.update(insertTrans, parameters);
+
+    } catch (error e) {
+        er = e;
+    }
+    return;
+
 }
