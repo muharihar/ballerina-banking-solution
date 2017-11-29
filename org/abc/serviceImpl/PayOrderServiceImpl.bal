@@ -33,7 +33,9 @@ public function getPayOrders (http:Request req) (http:Response res) {
     res = {};
     http:Session sesn = req.getSession();
     if (sesn != null) {
-        var j, ex = utils:listPayOrders();
+        var clientID, er = (string)sesn.getAttribute("clientid");
+        var id, _ = <int>clientID;
+        var j, ex = utils:listPayOrders(id);
         if (ex == null) {
             res.setStatusCode(200);
             res.setJsonPayload(j);
