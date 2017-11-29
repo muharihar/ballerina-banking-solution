@@ -81,6 +81,29 @@ public function listPayOrders (int userid) (json, error) {
     }
     println(accountArray[0]);
     list, er = dbOps:listPayOrdersDb(accountArray);
+    i = 0;
+    l = 0;
+    l = lengthof list;
+    while (i < l) {
+        var freq, e = (int)list[i].frequency;
+        if (freq == 12) {
+            string value = "Monthly";
+            list[i].frequency = value;
+        }
+        else if (freq == 4) {
+            string value = "Quartely";
+            list[i].frequency = value;
+        }
+        else if (freq == 1) {
+            string value = "Annually";
+            list[i].frequency = value;
+        }
+        else {
+            string value = "Not defined";
+            list[i].frequency = value;
+        }
+        i = i + 1;
+    }
     return list, er;
 }
 
