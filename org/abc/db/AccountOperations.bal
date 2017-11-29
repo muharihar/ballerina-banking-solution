@@ -37,3 +37,22 @@ public function getAccoutsByUserID (int userId) (json data, error er) {
     }
     return;
 }
+
+public function updateAccountBalanceByAccountNo (int accountNo, float balance) (int result, error er) {
+    endpoint <sql:ClientConnector> ep{
+        initDb();}
+
+    sql:Parameter[] parameters = [];
+
+    TypeConversionError eb;
+    string updateBalance = "UPDATE Account SET current_balance=? WHERE acc_number=?";
+    try {
+        sql:Parameter para1 = {sqlType:sql:Type.FLOAT, value:balance, direction:sql:Direction.IN};
+        sql:Parameter para2 = {sqlType:sql:Type.INTEGER, value:accountNo, direction:sql:Direction.IN};
+        parameters = [para1,para2];
+        result = ep.update(updateBalance, parameters);
+    } catch (error e) {
+        er = e;
+    }
+    return;
+}
