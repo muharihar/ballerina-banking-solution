@@ -4,8 +4,9 @@ import org.abc.db as dbOps;
 import ballerina.net.http;
 import ballerina.log;
 import org.abc.error as bError;
+import org.abc;
 
-public function utilityBillPaymentRequest (int account, string billNo, string provider, float amount) (boolean b, error e) {
+public function utilityBillPaymentRequest (int account, string billNo, string provider, float amount) (string response, error e) {
 
     float balance;
     error err;
@@ -13,6 +14,7 @@ public function utilityBillPaymentRequest (int account, string billNo, string pr
     boolean isValid;
     boolean isSuccess;
     int res;
+    int res2;
 
     //validate the bill number
     isValid, e = validateBillNumber(billNo, provider);
@@ -27,21 +29,31 @@ public function utilityBillPaymentRequest (int account, string billNo, string pr
         transaction {
 
             if (balance >= amount) {
-                //debit the bank and credit the service provider
-
+                //if balance is sufficient, debit the bank and credit the service provider
                 float updateBalance = balance - amount;
 
                 res, err = dbOps:updateAccountBalanceByAccountNo(account, updateBalance);
-                println("accountUpdate "+ res);
-                isSuccess, e = updateBankOfSP(billNo, amount, provider);
-                println(isSuccess);
+                //println("accountUpdate " + res);
 
-                if (res == 0 || err!=null) {
+                isSuccess, e = updateBankOfSP(billNo, amount, provider);
+                //println(isSuccess);
+
+                if (res == 0 || err != null) {
                     abort;
                 } else if (!isSuccess) {
                     abort;
                 } else {
+                    //if both requests successful, create a transaction record
+                    log:printInfo("Debit and credit to the respective accounts are successful. Now creating a transaction record");
+                    res2, err = dbOps:insertTransactions(amount, provider, 0, account, 1);
 
+                    if (err == null) {
+                        log:printInfo("Transaction record is created");
+                        response = "Transaction is successful";
+                    }
+                    else {
+                        abort;
+                    }
                 }
 
             } else {
@@ -63,7 +75,7 @@ public function utilityBillPaymentRequest (int account, string billNo, string pr
 
     }
 
-    return isValid, e;
+    return response, e;
 }
 
 function validateBillNumber (string billNo, string provider) (boolean, error) {
@@ -143,7 +155,7 @@ function updateBankOfSP (string billNo, float amount, string provider) (boolean,
         if ((error)err == null) {
             isSuccess, tErr = <boolean>res.getStringPayload();
 
-            log:printInfo("Payment is successful");
+            log:printInfo("Payment to the service providers' bank is successful");
         } else {
             msg = {msg:"Error occurred while making the payment"};
         }
@@ -153,7 +165,7 @@ function updateBankOfSP (string billNo, float amount, string provider) (boolean,
         res, err = epBank.post("/pay/" + billNo + "/" + amount, request);
         if ((error)err == null) {
             isSuccess, tErr = <boolean>res.getStringPayload();
-            log:printInfo("Payment is successful");
+            log:printInfo("Payment to the service providers' bank is successful");
         } else {
             msg = {msg:"Error occurred while making the payment"};
         }
@@ -163,7 +175,7 @@ function updateBankOfSP (string billNo, float amount, string provider) (boolean,
         res, err = epBank.post("/pay/" + billNo + "/" + amount, request);
         if ((error)err == null) {
             isSuccess, tErr = <boolean>res.getStringPayload();
-            log:printInfo("Payment is successful");
+            log:printInfo("Payment to the service providers' bank is successful");
         } else {
             msg = {msg:"Error occurred while making the payment"};
         }
