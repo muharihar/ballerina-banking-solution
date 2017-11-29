@@ -69,7 +69,7 @@ public function registerPayOrder (string payAmount, string day, string fromAcNo,
 public function listPayOrders()(json, error){
     json list;
     error er;
-    list, er = dbOps:listPayOrders();
+    list, er = dbOps:listPayOrdersDb();
     return list, er;
 }
 

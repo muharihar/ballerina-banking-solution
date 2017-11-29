@@ -29,7 +29,7 @@ public function insertPayOrderToDb (float transAmount, int transDay, int fromAcc
     return;
 }
 
-public function listPayOrders()(json, error){
+public function listPayOrdersDb()(json, error){
     endpoint<sql:ClientConnector> ep {}
     bind sqlCon with ep;
 
