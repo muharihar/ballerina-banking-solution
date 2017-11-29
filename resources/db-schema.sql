@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS Account(
 )ENGINE INNODB;
 
 CREATE TABLE IF NOT EXISTS Pay_Orders(
-	pay_order_id INT PRIMARY KEY,
+	pay_order_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	transaction_amount FLOAT(100,2),
-	transaction_date TIMESTAMP,
+	transaction_date INT,
 	acc_number INT,
 	to_acc_number INT,
 	frequency INT,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS Pay_Orders(
 )ENGINE INNODB;
 
 CREATE TABLE IF NOT EXISTS Transactions(
-	transaction_id INT PRIMARY KEY,
+	transaction_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	transaction_amount FLOAT(100,2),
 	transaction_date TIMESTAMP,
 	utility_provider_id INT,
@@ -88,8 +88,8 @@ INSERT INTO `Bank`.`OTP_Info` (`id`, `otp_id`, `created_date`, `user_id`) VALUES
 INSERT INTO `Bank`.`OTP_Info` (`id`, `otp_id`, `created_date`, `user_id`) VALUES ('2', '3456', '2017/11/10', '01034567890');
 INSERT INTO `Bank`.`OTP_Info` (`id`, `otp_id`, `created_date`, `user_id`) VALUES ('3', '4532', '2017/11/03', '01076699776');
 
-INSERT INTO `Bank`.`Pay_Orders` (`pay_order_id`, `transaction_amount`, `transaction_date`, `acc_number`, `to_acc_number`, `frequency`) VALUES ('1230', '1000.00', '2019-01-01 10:00:01.000000', '0114565456', '0117654326', '1');
-INSERT INTO `Bank`.`Pay_Orders` (`pay_order_id`, `transaction_amount`, `transaction_date`, `acc_number`, `to_acc_number`, `frequency`) VALUES ('1231', '2500.00', '2018-12-01 11:00:01.000000', '0114565458', '0116786547', '1');
+INSERT INTO `Bank`.`Pay_Orders` (`transaction_amount`, `transaction_date`, `acc_number`, `to_acc_number`, `frequency`) VALUES (1000.00, 29, 0114565456, 0114565459, 12);
+INSERT INTO `Bank`.`Pay_Orders` (`transaction_amount`, `transaction_date`, `acc_number`, `to_acc_number`, `frequency`) VALUES (2500.00, 29, 0114565458, 0114565459, 12);
 
 INSERT INTO `Bank`.`Utility_Provider` (`utility_provider_id`, `utlity_provider_name`) VALUES ('1', 'HSBC');
 INSERT INTO `Bank`.`Utility_Provider` (`utility_provider_id`, `utlity_provider_name`) VALUES ('2', 'Mobitel');
