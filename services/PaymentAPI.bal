@@ -4,12 +4,12 @@ import ballerina.net.http;
 import org.abc.serviceImpl;
 
 @http:configuration {
-    basePath:"/"
+    basePath:""
 }
 service<http> PaymentAPI {
     @http:resourceConfig {
         methods:["POST"],
-        path:"/payutilitybill"
+        path:""
     }
     resource getuser (http:Request req, http:Response resp) {
         //sample payload

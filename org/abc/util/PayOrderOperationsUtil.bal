@@ -132,7 +132,6 @@ public function payOderScheduleYearlyTaskTimer() (error err) {
     } catch (error e) {
         log:printErrorCause("Scheduled Task Appointment failure", e);
         err = e;
-
     }
     return;
 }

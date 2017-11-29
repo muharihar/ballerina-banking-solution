@@ -33,7 +33,6 @@ public function addUser (http:Request req) (http:Response res) {
         map formParams = req.getFormParams();
         var username, err1 = (string)formParams["username"];
         var passwd, err2 = (string)formParams["password"];
-        println("XXXXX");
         if (err1 == null || err2 == null) {
             //println("Username : " + username + " Password : " + passwd + );
             var clientid , _ = (int)sesn.getAttribute("clientid");
