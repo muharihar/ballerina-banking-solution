@@ -1,1 +1,204 @@
 package org.abc.util;
+
+import org.abc.db as dbOps;
+import ballerina.net.http;
+import ballerina.log;
+import org.abc.error as bError;
+
+public function utilityBillPaymentRequest (int account, string billNo, string provider, float amount) (boolean b, error e) {
+
+    float balance;
+    error err;
+    bError:BackendError bErr;
+    boolean isValid;
+    boolean isSuccess;
+    int res;
+
+    //validate the bill number
+    isValid, e = validateBillNumber(billNo, provider);
+
+    if (e != null) {
+        log:printError("Error in UtilityBillPaymentRequest: " + e.msg);
+
+    } else if (isValid) {
+        //check if the balance is sufficient
+        balance, err, bErr = getBalanceByAccountNumber(account);
+
+        transaction {
+
+            if (balance >= amount) {
+                //debit the bank and credit the service provider
+
+                float updateBalance = balance - amount;
+
+                res, err = dbOps:updateAccountBalanceByAccountNo(account, updateBalance);
+                println("accountUpdate "+ res);
+                isSuccess, e = updateBankOfSP(billNo, amount, provider);
+                println(isSuccess);
+
+                if (res == 0 || err!=null) {
+                    abort;
+                } else if (!isSuccess) {
+                    abort;
+                } else {
+
+                }
+
+            } else {
+                e = {msg:"Payment Declined: Insufficient funds in the account"};
+            }
+
+        } failed {
+            retry 2;
+
+        } aborted {
+            log:printError("Transactionn Aborted");
+            e = {msg:"Payment Declined: Transaction Aborted"};
+        } committed {
+
+        }
+    } else {
+
+        e = {msg:"Bill number is invalid"};
+
+    }
+
+    return isValid, e;
+}
+
+function validateBillNumber (string billNo, string provider) (boolean, error) {
+    endpoint<http:HttpClient> epDialog {
+        initDialog();
+    }
+    endpoint<http:HttpClient> epMobitel {
+        initMobitel();
+    }
+    endpoint<http:HttpClient> epHSBC {
+        initHSBC();
+    }
+
+    http:Request request = {};
+    http:Response res = {};
+    http:HttpConnectorError err;
+    error msg;
+    boolean isValid;
+    TypeConversionError tErr;
+
+
+    if (provider.equalsIgnoreCase("Dialog")) {
+
+        res, err = epDialog.post("/validate/" + billNo, request);
+        if ((error)err == null) {
+            isValid, tErr = <boolean>res.getStringPayload();
+            log:printInfo("Bill number is verified");
+        } else {
+            msg = {msg:"Error occurred while validating the bill number"};
+        }
+
+    } else if (provider.equalsIgnoreCase("Mobitel")) {
+
+        res, err = epMobitel.post("/validate/" + billNo, request);
+        if ((error)err == null) {
+            isValid, tErr = <boolean>res.getStringPayload();
+            log:printInfo("Bill number is verified");
+        } else {
+            msg = {msg:"Error occurred while validating the bill number"};
+        }
+
+    } else if (provider.equalsIgnoreCase("HSBC")) {
+
+        res, err = epHSBC.post("/validate/" + billNo, request);
+        if ((error)err == null) {
+            isValid, tErr = <boolean>res.getStringPayload();
+            log:printInfo("Bill number is verified");
+        } else {
+            msg = {msg:"Error occurred while validating the bill number"};
+        }
+
+    } else {
+        msg = {msg:"Invalid Service Provider"};
+    }
+
+
+    return isValid, msg;
+
+}
+
+
+function updateBankOfSP (string billNo, float amount, string provider) (boolean, error) {
+    endpoint<http:HttpClient> epBank {
+        initBankOfDialog();
+    }
+
+    http:Request request = {};
+    http:Response res = {};
+    http:HttpConnectorError err;
+    error msg;
+    boolean isSuccess;
+    TypeConversionError tErr;
+
+    if (provider.equalsIgnoreCase("Dialog")) {
+
+        res, err = epBank.post("/pay/" + billNo + "/" + amount, request);
+        if ((error)err == null) {
+            isSuccess, tErr = <boolean>res.getStringPayload();
+
+            log:printInfo("Payment is successful");
+        } else {
+            msg = {msg:"Error occurred while making the payment"};
+        }
+
+    } else if (provider.equalsIgnoreCase("Mobitel")) {
+
+        res, err = epBank.post("/pay/" + billNo + "/" + amount, request);
+        if ((error)err == null) {
+            isSuccess, tErr = <boolean>res.getStringPayload();
+            log:printInfo("Payment is successful");
+        } else {
+            msg = {msg:"Error occurred while making the payment"};
+        }
+
+    } else if (provider.equalsIgnoreCase("HSBC")) {
+
+        res, err = epBank.post("/pay/" + billNo + "/" + amount, request);
+        if ((error)err == null) {
+            isSuccess, tErr = <boolean>res.getStringPayload();
+            log:printInfo("Payment is successful");
+        } else {
+            msg = {msg:"Error occurred while making the payment"};
+        }
+
+    } else {
+        msg = {msg:"Invalid Service Provider"};
+    }
+
+
+    return isSuccess, msg;
+}
+
+
+function initDialog () (http:HttpClient ep) {
+    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    ep = create http:HttpClient(baseURL, {});
+    return;
+}
+function initMobitel () (http:HttpClient ep) {
+    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    ep = create http:HttpClient(baseURL, {});
+    return;
+}
+function initHSBC () (http:HttpClient ep) {
+    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    ep = create http:HttpClient(baseURL, {});
+    return;
+}
+function initBankOfDialog () (http:HttpClient ep) {
+    // http:Options op = {};
+    // http:timeout timeout = { valueMillis: 10000 };
+    // http:options options = { timeoutConfig: timeout };
+    // http:retry retry = { maxRetryCount: 4, retryDuration: 20000 };
+    // http:options options2 = { retryConfig: retry };
+    string baseURL = "http://localhost:8080/RESTfulService/mock/bankService";
+    ep = create http:HttpClient(baseURL, {});
+    return;
+}

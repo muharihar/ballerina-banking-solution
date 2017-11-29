@@ -3,7 +3,7 @@ package org.abc.serviceImpl;
 import org.abc.util as utils;
 import ballerina.net.http;
 
-public function getAccountInfo (http:Request req)(http:Response res) {
+public function getAccountInfo (http:Request req) (http:Response res) {
     res = {};
     http:Session sesn = req.getSession();
     //println(sesn.getId());
@@ -27,8 +27,32 @@ public function getAccountHistory (http:Request req) (http:Response res) {
     if (ex == null) {
         res.setJsonPayload(resJ);
     }
-    else{
+    else {
         res.setJsonPayload(ex.msg);
     }
+    return;
+}
+
+public function getAccountHistoryByAcc (http:Request req) (http:Response res) {
+    res = {};
+    http:Session sesn = req.getSession();
+    if (sesn != null) {
+        map params = req.getQueryParams();
+        var acc1, err1 = (string)params.acc;
+        if (err1 != null) {
+            throw err1;
+        }
+        var acc2, err2 = <int>acc1;
+        var resJ, ex = utils:getAccountHistoryByAccNo(acc2);
+        if (ex == null) {
+            res.setJsonPayload(resJ);
+        }
+        else {
+            res.setJsonPayload(ex.msg);
+        }
+    } else {
+        res.setStatusCode(403);
+    }
+
     return;
 }

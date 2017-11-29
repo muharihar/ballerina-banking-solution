@@ -139,12 +139,12 @@ public function getBalanceByAccountNumber (int accountNumber) (float balance, er
         while (dt.hasNext()) {
             b = false;
             any dataStruct = dt.getNext();
-            println(dataStruct);
+            //println(dataStruct);
 
             bal, ex = (beans:AccountBalance)dataStruct;
             if (ex == null) {
                 balance = bal.current_balance;
-                println(balance);
+                //println(balance);
             }
             else {
                 log:printErrorCause("AccountBalance:error in struct casting", (error)ex);
