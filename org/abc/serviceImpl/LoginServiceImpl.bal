@@ -13,10 +13,6 @@ public function handleLogin (http:Request req) (http:Response res) {
     if (userName != "" && passwd != "") {
         http:Session sesn = req.createSessionIfAbsent();
         var userId, err = util:loginUser(userName, passwd);
-        println("userId==");
-        println(userId);
-        println("Error==");
-        println(err);
         if (err == null) {
             sesn.setAttribute("clientid",userId);
             res.setStatusCode(200);
