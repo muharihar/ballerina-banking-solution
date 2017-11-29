@@ -36,7 +36,7 @@ public function executeMonthlyPayOrder () (error err) {
     sql:Parameter[] parameters = [];
     string selectMonthlyPayOrders = "SELECT * from Pay_Orders WHERE frequency=12";
     string updateAccount = "UPDATE Account SET current_balance=? WHERE acc_number=?";
-    string updateTransactions = "INSERT INTO Transactions (transaction_id, transaction_amount, transaction_date, pay_order_id, acc_number, currency_id) VALUES (?,?,?,?,?,1)";
+    string updateTransactions = "INSERT INTO Transactions (transaction_id, transaction_amount, transaction_date, pay_order_id, acc_number, currency_id) VALUES (?,?,NOW(),?,?,1)";
 
     TypeConversionError eM;
     json monthlyData;
@@ -100,10 +100,10 @@ public function executeMonthlyPayOrder () (error err) {
                                 var payorderid, _ = (int)monthlyData[i].pay_order_id;
                                 sql:Parameter paraTransId = {sqlType:sql:Type.INTEGER, value:maxTransactionID+1, direction:sql:Direction.IN};
                                 sql:Parameter paraTransaAmount = {sqlType:sql:Type.FLOAT, value:payableAmount, direction:sql:Direction.IN};
-                                sql:Parameter paraTransDate = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
+                                //sql:Parameter paraTransDate = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
                                 sql:Parameter paraTransPayOrderId = {sqlType:sql:Type.INTEGER, value:payorderid, direction:sql:Direction.IN};
                                 sql:Parameter paraAccNo = {sqlType:sql:Type.INTEGER, value:fromAcc, direction:sql:Direction.IN};
-                                parameters = [paraTransId, paraTransaAmount, paraTransDate, paraTransPayOrderId, paraAccNo];
+                                parameters = [paraTransId, paraTransaAmount, paraTransPayOrderId, paraAccNo];
                                 int insertedRowCount = ep.update(updateTransactions, parameters);
                                 if (insertedRowCount != 1){
                                          abort;
@@ -126,6 +126,220 @@ public function executeMonthlyPayOrder () (error err) {
                     log:printInfo("Transaction committed");
                 }
             }
+            i = i+1;
+        }
+
+
+    } catch (error e) {
+        err = e;
+    }
+    return;
+}
+
+public function executeQuartelyPayOrder () (error err) {
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
+
+    sql:Parameter[] parameters = [];
+    string selectMonthlyPayOrders = "SELECT * from Pay_Orders WHERE frequency=4";
+    string updateAccount = "UPDATE Account SET current_balance=? WHERE acc_number=?";
+    string updateTransactions = "INSERT INTO Transactions (transaction_id, transaction_amount, transaction_date, pay_order_id, acc_number, currency_id) VALUES (?,?,NOW(),?,?,1)";
+
+    TypeConversionError eM;
+    json quartleyData;
+    //Time time = currentTime();
+    //int day = time.day();
+    int updatedRowCount_debit;
+    int updatedRowCount_credit;
+
+    try {
+        datatable dt = ep.select(selectMonthlyPayOrders, parameters);
+        quartleyData, eM = <json>dt;
+        int length = lengthof quartleyData;
+        int i = 0;
+
+        while (i < length) {
+            //var dateInDb, _ = (int)monthlyData[i].transaction_date;
+            //if (day == dateInDb) {
+                transaction {
+                    var payableAmount, _ = (float)quartleyData[i].transaction_amount;
+                    var fromAcc, _ = (int)quartleyData[i].acc_number;
+                    var toAcc, _ = (int)quartleyData[i].to_acc_number;
+                    var currentBalanceFromAcc, ec = getAccountBalance(fromAcc);
+                    if (ec == null) {
+                        if (currentBalanceFromAcc > payableAmount){
+                            float newBalFrom = currentBalanceFromAcc - payableAmount;
+                            sql:Parameter paraAccBalFrom = {sqlType:sql:Type.FLOAT, value:newBalFrom, direction:sql:Direction.IN};
+                            sql:Parameter paraFromAcc = {sqlType:sql:Type.INTEGER, value:fromAcc, direction:sql:Direction.IN};
+                            parameters = [paraAccBalFrom, paraFromAcc];
+                            updatedRowCount_credit = ep.update(updateAccount, parameters);
+                             }
+                        else{
+                            abort;
+                        }
+
+                    }
+                    else {
+                        err = ec;
+                        log:printErrorCause("Error at getting acc balance", err);
+                    }
+                    var currentBalanceToAcc, et = getAccountBalance(toAcc);
+                    if (et == null) {
+                        parameters = [];
+                        float newBalTo = currentBalanceToAcc + payableAmount;
+                        sql:Parameter paraAccBalTo = {sqlType:sql:Type.FLOAT, value:newBalTo, direction:sql:Direction.IN};
+                        sql:Parameter paraToAcc = {sqlType:sql:Type.INTEGER, value:toAcc, direction:sql:Direction.IN};
+                        parameters = [paraAccBalTo, paraToAcc];
+                        updatedRowCount_debit = ep.update(updateAccount, parameters);
+                    }
+                    else {
+                        err = et;
+                        log:printErrorCause("Error at getting acc balance: to Account", err);
+                    }
+                    if (updatedRowCount_credit != 1 && updatedRowCount_debit != 1) {
+                        abort;
+                    }
+                    else{
+                        var maxTransactionID, mErr = getLatestTransactionID();
+                        if(mErr == null){
+                                parameters = [];
+
+                                var payorderid, _ = (int)quartleyData[i].pay_order_id;
+                                sql:Parameter paraTransId = {sqlType:sql:Type.INTEGER, value:maxTransactionID+1, direction:sql:Direction.IN};
+                                sql:Parameter paraTransaAmount = {sqlType:sql:Type.FLOAT, value:payableAmount, direction:sql:Direction.IN};
+                                //sql:Parameter paraTransDate = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
+                                sql:Parameter paraTransPayOrderId = {sqlType:sql:Type.INTEGER, value:payorderid, direction:sql:Direction.IN};
+                                sql:Parameter paraAccNo = {sqlType:sql:Type.INTEGER, value:fromAcc, direction:sql:Direction.IN};
+                                parameters = [paraTransId, paraTransaAmount, paraTransPayOrderId, paraAccNo];
+                                int insertedRowCount = ep.update(updateTransactions, parameters);
+                                if (insertedRowCount != 1){
+                                         abort;
+                                     }
+
+                            }
+                        else{
+                            err = mErr;
+                            log:printErrorCause("Error getting max transaction id", err);
+                        }
+                    }
+
+                } failed {
+                    retry 3;
+
+                } aborted {
+                    log:printInfo("Transaction aborted");
+
+                } committed {
+                    log:printInfo("Transaction committed");
+                }
+            //}
+            i = i+1;
+        }
+
+
+    } catch (error e) {
+        err = e;
+    }
+    return;
+}
+
+public function executeYearlyPayOrder () (error err) {
+    endpoint<sql:ClientConnector> ep {}
+    bind sqlCon with ep;
+
+    sql:Parameter[] parameters = [];
+    string selectMonthlyPayOrders = "SELECT * from Pay_Orders WHERE frequency=1";
+    string updateAccount = "UPDATE Account SET current_balance=? WHERE acc_number=?";
+    string updateTransactions = "INSERT INTO Transactions (transaction_id, transaction_amount, transaction_date, pay_order_id, acc_number, currency_id) VALUES (?,?,NOW(),?,?,1)";
+
+    TypeConversionError eM;
+    json quartleyData;
+    //Time time = currentTime();
+    //int day = time.day();
+    int updatedRowCount_debit;
+    int updatedRowCount_credit;
+
+    try {
+        datatable dt = ep.select(selectMonthlyPayOrders, parameters);
+        quartleyData, eM = <json>dt;
+        int length = lengthof quartleyData;
+        int i = 0;
+
+        while (i < length) {
+            //var dateInDb, _ = (int)monthlyData[i].transaction_date;
+            //if (day == dateInDb) {
+                transaction {
+                    var payableAmount, _ = (float)quartleyData[i].transaction_amount;
+                    var fromAcc, _ = (int)quartleyData[i].acc_number;
+                    var toAcc, _ = (int)quartleyData[i].to_acc_number;
+                    var currentBalanceFromAcc, ec = getAccountBalance(fromAcc);
+                    if (ec == null) {
+                        if (currentBalanceFromAcc > payableAmount){
+                            float newBalFrom = currentBalanceFromAcc - payableAmount;
+                            sql:Parameter paraAccBalFrom = {sqlType:sql:Type.FLOAT, value:newBalFrom, direction:sql:Direction.IN};
+                            sql:Parameter paraFromAcc = {sqlType:sql:Type.INTEGER, value:fromAcc, direction:sql:Direction.IN};
+                            parameters = [paraAccBalFrom, paraFromAcc];
+                            updatedRowCount_credit = ep.update(updateAccount, parameters);
+                             }
+                        else{
+                            abort;
+                        }
+
+                    }
+                    else {
+                        err = ec;
+                        log:printErrorCause("Error at getting acc balance", err);
+                    }
+                    var currentBalanceToAcc, et = getAccountBalance(toAcc);
+                    if (et == null) {
+                        parameters = [];
+                        float newBalTo = currentBalanceToAcc + payableAmount;
+                        sql:Parameter paraAccBalTo = {sqlType:sql:Type.FLOAT, value:newBalTo, direction:sql:Direction.IN};
+                        sql:Parameter paraToAcc = {sqlType:sql:Type.INTEGER, value:toAcc, direction:sql:Direction.IN};
+                        parameters = [paraAccBalTo, paraToAcc];
+                        updatedRowCount_debit = ep.update(updateAccount, parameters);
+                    }
+                    else {
+                        err = et;
+                        log:printErrorCause("Error at getting acc balance: to Account", err);
+                    }
+                    if (updatedRowCount_credit != 1 && updatedRowCount_debit != 1) {
+                        abort;
+                    }
+                    else{
+                        var maxTransactionID, mErr = getLatestTransactionID();
+                        if(mErr == null){
+                                parameters = [];
+
+                                var payorderid, _ = (int)quartleyData[i].pay_order_id;
+                                sql:Parameter paraTransId = {sqlType:sql:Type.INTEGER, value:maxTransactionID+1, direction:sql:Direction.IN};
+                                sql:Parameter paraTransaAmount = {sqlType:sql:Type.FLOAT, value:payableAmount, direction:sql:Direction.IN};
+                                //sql:Parameter paraTransDate = {sqlType:sql:Type.TIMESTAMP, value:time, direction:sql:Direction.IN};
+                                sql:Parameter paraTransPayOrderId = {sqlType:sql:Type.INTEGER, value:payorderid, direction:sql:Direction.IN};
+                                sql:Parameter paraAccNo = {sqlType:sql:Type.INTEGER, value:fromAcc, direction:sql:Direction.IN};
+                                parameters = [paraTransId, paraTransaAmount, paraTransPayOrderId, paraAccNo];
+                                int insertedRowCount = ep.update(updateTransactions, parameters);
+                                if (insertedRowCount != 1){
+                                         abort;
+                                     }
+
+                            }
+                        else{
+                            err = mErr;
+                            log:printErrorCause("Error getting max transaction id", err);
+                        }
+                    }
+
+                } failed {
+                    retry 3;
+
+                } aborted {
+                    log:printInfo("Transaction aborted");
+
+                } committed {
+                    log:printInfo("Transaction committed");
+                }
+            //}
             i = i+1;
         }
 

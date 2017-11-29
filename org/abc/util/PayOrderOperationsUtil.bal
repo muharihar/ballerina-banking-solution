@@ -65,3 +65,72 @@ public function registerPayOrder (string payAmount, string day, string fromAcNo,
     }
     return;
 }
+
+
+public function payOderScheduleMonthlyTaskTimer () (error err) {
+    string appTid;
+
+    //runs every day at 01:00
+    string cron = "	0 15 12 1/1 * ? *";
+    function () returns (error) onTriggerFunction;
+    function (error) onErrorFunction;
+    onTriggerFunction = dbOps:executeMonthlyPayOrder;
+    onErrorFunction = payOrderError;
+
+    try {
+        appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, cron);
+        println("Success");
+    } catch (error e) {
+        log:printErrorCause("Scheduled Task Appointment failure", e);
+        err = e;
+
+    }
+    return;
+}
+
+public function payOderScheduleQuartleyTaskTimer () (error err) {
+    string appTid;
+
+    //runs every first day once in 3 months
+    string cron = "0 0 12 1 1/3 ? *";
+    function () returns (error) onTriggerFunction;
+    function (error) onErrorFunction;
+    onTriggerFunction = dbOps:executeQuartelyPayOrder;
+    onErrorFunction = payOrderError;
+
+    try {
+        appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, cron);
+        println("Success");
+    } catch (error e) {
+        log:printErrorCause("Scheduled Task Appointment failure", e);
+        err = e;
+
+    }
+    return;
+}
+
+public function payOderScheduleYearlyTaskTimer() (error err) {
+    string appTid;
+
+    //runs every first day of every year
+    string cron = "	0 0 12 1 1 ? *";
+    function () returns (error) onTriggerFunction;
+    function (error) onErrorFunction;
+    onTriggerFunction = dbOps:executeYearlyPayOrder;
+    onErrorFunction = payOrderError;
+
+    try {
+        appTid, _ = task:scheduleAppointment(onTriggerFunction, onErrorFunction, cron);
+        println("Success");
+    } catch (error e) {
+        log:printErrorCause("Scheduled Task Appointment failure", e);
+        err = e;
+
+    }
+    return;
+}
+
+function payOrderError(error e) {
+    print("[ERROR] Pay Order Execution failed");
+    println(e);
+}
