@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS Pay_Orders(
 )ENGINE INNODB;
 
 CREATE TABLE IF NOT EXISTS Transactions(
-	transaction_id INT PRIMARY KEY,
+	transaction_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	transaction_amount FLOAT(100,2),
 	transaction_date TIMESTAMP,
 	utility_provider_id INT,
