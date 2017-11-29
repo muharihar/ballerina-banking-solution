@@ -66,10 +66,21 @@ public function registerPayOrder (string payAmount, string day, string fromAcNo,
     return;
 }
 
-public function listPayOrders()(json, error){
+public function listPayOrders (int userid) (json, error) {
     json list;
     error er;
-    list, er = dbOps:listPayOrdersDb();
+    var accountList, errorAccountRetrieve = dbOps:getAccoutsByUserID(userid);
+    println(accountList);
+    int i = 0;
+    int l = lengthof accountList;
+    int[] accountArray = [];
+    TypeCastError eb;
+    while (i < l) {
+        accountArray[i], eb = (int)accountList[i].acc_number;
+        i = i + 1;
+    }
+    println(accountArray[0]);
+    list, er = dbOps:listPayOrdersDb(accountArray);
     return list, er;
 }
 
@@ -116,7 +127,7 @@ public function payOderScheduleQuartleyTaskTimer () (error err) {
     return;
 }
 
-public function payOderScheduleYearlyTaskTimer() (error err) {
+public function payOderScheduleYearlyTaskTimer () (error err) {
     string appTid;
 
     //runs every first day of every year
@@ -136,7 +147,7 @@ public function payOderScheduleYearlyTaskTimer() (error err) {
     return;
 }
 
-function payOrderError(error e) {
+function payOrderError (error e) {
     print("[ERROR] Pay Order Execution failed");
     println(e);
 }
