@@ -2,6 +2,7 @@ package org.abc.connectors;
 
 import ballerina.net.http;
 import ballerina.util;
+import ballerina.config;
 
 public connector IDPConnector () {
     string authHeader = getEncodedValue("admin","admin");
@@ -129,10 +130,12 @@ function getEncodedValue(string value1,string value2) (string encodedString) {
     return ;
 }
 function init() (http:HttpClient idpEndpoint) {
-    string url = "https://192.168.48.209:9443/services";
+    //string url = "https://192.168.48.209:9443/services";
+    string hostname = config:getGlobalValue("idp.host");
+    string port = config:getGlobalValue("idp.port");
+    string url = string `https://{{hostname}}:{{port}}/services`;
     //string url = "https://localhost:8909/services";
-    idpEndpoint =
-    create http:HttpClient(url,{});
+    idpEndpoint = create http:HttpClient(url,{});
     return ;
 }
 function getRequest(string soapAction, xml payload, string authHeader) (http:Request req){

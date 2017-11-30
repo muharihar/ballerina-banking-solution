@@ -4,32 +4,23 @@ import ballerina.net.http;
 import org.abc.serviceImpl;
 
 @http:configuration {
-    basePath:"/api",
+    basePath:"/",
     allowOrigins:["http://localhost", "http://localhost:4200"],
     allowCredentials:true
 }
 service<http> api {
     @http:resourceConfig {
         methods:["GET"],
-        path:"/getuser"
+        path:"/api/getuser"
     }
     resource getuser (http:Request req, http:Response resp) {
-        //json payload = {
-        //                   "user_id":1034567890,
-        //                   "first_name":"Chathurika",
-        //                   "last_name":"De Silva",
-        //                   "national_id":"867865344V",
-        //                   "birth_date":"1986-07-23",
-        //                   "email":"chathurika@gmail.com",
-        //                   "address":"No.12,Maradana"
-        //               };
         http:Response beResp = serviceImpl:handleSignup(req);
         _ = resp.forward(beResp);
     }
 
     @http:resourceConfig {
         methods:["POST"],
-        path:"/token"
+        path:"/api/token"
     }
     resource tokenInbound (http:Request req, http:Response resp) {
         http:Response  beResp = serviceImpl:checkTokenValidity(req);
@@ -38,7 +29,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["POST","GET"],
-        path:"/login"
+        path:"/api/login"
     }
     resource loginInbound (http:Request req, http:Response resp) {
         http:Response  beResp = serviceImpl:handleLogin(req);
@@ -47,7 +38,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["POST"],
-        path:"/signup"
+        path:"/api/signup"
     }
     resource signupUser (http:Request req, http:Response resp) {
         http:Response r = serviceImpl:addUser(req);
@@ -56,7 +47,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["GET"],
-        path:"/logout"
+        path:"/api/logout"
     }
     resource logout (http:Request req, http:Response resp) {
         // Check whether the Token is valid
@@ -67,7 +58,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["GET"],
-        path:"/userprofile"
+        path:"/api/userprofile"
     }
     resource getUserProfile (http:Request req, http:Response resp) {
         http:Response beResp = serviceImpl:getUserProfile(req);
@@ -76,7 +67,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["GET"],
-        path:"/account/getinfo"
+        path:"/api/account/getinfo"
     }
     resource getAccountInfo (http:Request req, http:Response resp) {
         http:Response beResp = serviceImpl:getAccountInfo(req);
@@ -84,7 +75,7 @@ service<http> api {
     }
 
     @http:resourceConfig {
-        path:"/accounthistory",
+        path:"/api/accounthistory",
         methods:["GET"]
     }
     resource getAccountHistoryResource (http:Request req, http:Response res) {
@@ -92,6 +83,27 @@ service<http> api {
         re = serviceImpl:getAccountHistoryByAcc(req);
         _ = res.forward(re);
 
+    }
+
+    @http:resourceConfig {
+        path:"/api/payorder/add",
+        methods:["POST"]
+    }
+    resource addPayorder (http:Request req, http:Response res) {
+        http:Response re = {};
+        re = serviceImpl:addPayOrder(req);
+        _ = res.forward(re);
+
+    }
+
+    @http:resourceConfig {
+        path:"/api/payorder/get",
+        methods:["GET"]
+    }
+    resource getPayorder (http:Request req, http:Response res) {
+        http:Response re = {};
+        re = serviceImpl:getPayOrders(req);
+        _ = res.forward(re);
     }
 
     @http:resourceConfig {

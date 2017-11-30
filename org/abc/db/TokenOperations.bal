@@ -1,8 +1,5 @@
 package org.abc.db;
 
-import ballerina.util;
-import org.abc.beans;
-import ballerina.log;
 import ballerina.data.sql;
 
 const int TOKEN_VALIDITY_IN_HOURS = 48;
@@ -11,33 +8,6 @@ function isValidTokenExistForUserId (int userID) (boolean exist) {
     endpoint
     <sql:ClientConnector> ep {}
     bind sqlCon with ep;
-    sql:Parameter[] parameters = [];
-    string query_tokenInfo = "SELECT TIMESTAMPDIFF(HOUR,(SELECT created_date FROM OTP_Info WHERE user_id=?), now()) < ?;";
-    TypeCastError ex;
-    beans:TokenValidity tv;
-    exist = false;
-
-    // try {
-    //     //Checking token existence against user id in database
-    //     sql:Parameter para1 = {sqlType:sql:Type.INTEGER, value:userID, direction:sql:Direction.IN};
-    //     parameters = [para1];
-    //     datatable dt = ep.select(query_tokenInfo, parameters);
-
-    //     while (dt.hasNext()) {
-    //         exist = true;
-    //         any dataStruct = dt.getNext();
-    //         tv, ex = (beans:TokenValidity)dataStruct;
-    //         if (ex != null) {
-    //             log:printErrorCause("TokenGen:error in struct casting", (error)ex);
-    //         }
-    //         else {
-    //             //println(tv.created_date);
-    //             otpCreatedTime = tv.created_date;
-    //         }
-    //     }
-    // } catch (error e) {
-    //     err = e;
-    // }
     return;
 }
 

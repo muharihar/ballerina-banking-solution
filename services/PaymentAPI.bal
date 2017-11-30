@@ -4,7 +4,7 @@ import ballerina.net.http;
 import org.abc.serviceImpl;
 
 @http:configuration {
-    basePath:"/"
+    basePath:"/b"
 }
 service<http> PaymentAPI {
     @http:resourceConfig {
