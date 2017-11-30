@@ -108,7 +108,7 @@ service<http> api {
 
     @http:resourceConfig {
         methods:["POST"],
-        path:"/payutilitybill"
+        path:"/api/payutilitybill"
     }
     resource payUtilityBills (http:Request req, http:Response resp) {
         //sample payload
