@@ -9,12 +9,12 @@ public function processPayload(http:Request req,string userid) (http:Response re
     res = {};
     error eProcessPayload;
     requestPayload = req.getBinaryPayload();
-    var headerValue,isExists = req.getHeader("Content-Type");
-    var testH, testEH = req.getHeader("Content-Disposition");
-    println(testH);
-    println(testEH);
+    var headerValue = req.getHeader("Content-Type");
+    var testH = req.getHeader("Content-Disposition");
+    //println(testH);
+    //println(testEH);
     
-    if (isExists) {
+    if (headerValue != null) {
         boolean st = utils:checkContentType(headerValue);
         
         if (st) {
