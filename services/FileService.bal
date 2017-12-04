@@ -14,7 +14,7 @@ service<http> FileService {
     }
     resource createFileResource (http:Request req,http:Response res, string userid) {
         http:Response newRes = {};
-        var t, v = req.getHeader("Content-Type");
+        var t = req.getHeader("Content-Type");
         println(t);
         newRes = serImpl:processPayload(req, userid);
         _ = res.forward(newRes);
