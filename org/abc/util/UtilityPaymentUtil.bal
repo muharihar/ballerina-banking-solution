@@ -5,6 +5,7 @@ import ballerina.net.http;
 import ballerina.log;
 import org.abc.error as bError;
 import org.abc;
+import ballerina.config;
 
 public function utilityBillPaymentRequest (int account, string billNo, string provider, float amount) (string response, error e) {
 
@@ -190,22 +191,30 @@ function updateBankOfSP (string billNo, float amount, string provider) (boolean,
 
 
 function initDialog () (http:HttpClient ep) {
-    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    string hostname = config:getGlobalValue("mock.host");
+    string port = config:getGlobalValue("mock.port");
+    string baseURL = string `http://{{hostname}}:{{port}}/RESTfulService/mock/validateBillService`;
     ep = create http:HttpClient(baseURL, {});
     return;
 }
 function initMobitel () (http:HttpClient ep) {
-    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    string hostname = config:getGlobalValue("mock.host");
+    string port = config:getGlobalValue("mock.port");
+    string baseURL = string `http://{{hostname}}:{{port}}/RESTfulService/mock/validateBillService`;
     ep = create http:HttpClient(baseURL, {});
     return;
 }
 function initHSBC () (http:HttpClient ep) {
-    string baseURL = "http://localhost:8080/RESTfulService/mock/validateBillService";
+    string hostname = config:getGlobalValue("mock.host");
+    string port = config:getGlobalValue("mock.port");
+    string baseURL = string `http://{{hostname}}:{{port}}/RESTfulService/mock/validateBillService`;
     ep = create http:HttpClient(baseURL, {});
     return;
 }
 function initBankOfDialog () (http:HttpClient ep) {
-    string baseURL = "http://localhost:8080/RESTfulService/mock/bankService";
+    string hostname = config:getGlobalValue("mock.host");
+    string port = config:getGlobalValue("mock.port");
+    string baseURL = string `http://{{hostname}}:{{port}}/RESTfulService/mock/bankService`;
     ep = create http:HttpClient(baseURL, {endpointTimeout: 150, retryConfig:{count:3, interval:200}});
     return;
 }
