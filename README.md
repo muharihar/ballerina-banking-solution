@@ -1,5 +1,6 @@
 # ballerina-banking-solution
-An POC online banking system done with ballerina
+
+An POC online banking system done with ballerina. This only contains the backend server.
 
 
 ## How to deploy
